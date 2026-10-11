@@ -1,0 +1,36 @@
+POLÍTICA DE USO Y ASIGNACIÓN DE EQUIPO DE CÓMPUTO Y DISPOSITIVOS ELECTRÓNICOS
+CÓDIGO: SS - RH - PO - 001 | FOLIO: {folio}
+FECHA DE ASIGNACIÓN: {fecha_entrega}
+
+1. OBJETIVO
+Establecer los lineamientos generales para la asignación, resguardo y uso debido de equipos de cómputo, laptops y dispositivos electrónicos como herramientas de trabajo otorgadas al colaborador.
+
+2. ALCANCE
+Aplica a todo colaborador que, por la naturaleza de su puesto y funciones operativas, tenga asignado bajo su resguardo un equipo de cómputo o dispositivo electrónico propiedad de la empresa.
+
+3. LINEAMIENTOS GENERALES DE USO
+a) El equipo asignado es una herramienta exclusiva de trabajo para el desempeño de las actividades laborales.
+b) El colaborador es el único responsable del cuidado físico, lógico y resguardo del equipo consignado. Queda estrictamente prohibido prestarlo, cederlo o facilitar su uso a terceras personas.
+c) El colaborador deberá reportar inmediatamente al área de Sistemas / Soporte e Infraestructura cualquier falla, daño, avería, pérdida o robo del equipo.
+d) Queda prohibida la instalación de software no autorizado o modificaciones no aprobadas a la configuración del sistema.
+
+4. SINIESTROS Y DEVOLUCIÓN
+En caso de robo o pérdida, el usuario deberá reportarlo de inmediato a su jefe directo y al área de Sistemas, así como presentar la denuncia correspondiente ante el Ministerio Público.
+Al término de la relación laboral o por reasignación, el colaborador deberá reintegrar el equipo y todos sus accesorios en óptimas condiciones de funcionamiento.
+
+============================================================
+DATOS DEL EQUIPO CONSIGNADO
+============================================================
+Folio de Asignación: {folio}
+Nombre del Empleado: {nombre_empleado}
+Equipo Asignado: {equipo_asignado}
+Marca: {marca}
+Modelo: {modelo}
+Fecha de Entrega: {fecha_entrega}
+Estado Físico: {estado_fisico}
+Notas / Accesorios Extra: {notas}
+
+============================================================
+RESPONSIVA DE RECEPCIÓN Y CONFORMIDAD
+============================================================
+En el presente acto recibo de LA EMPRESA en carácter de herramienta de trabajo el equipo descrito anteriormente. Me comprometo a cuidarlo, utilizarlo únicamente para fines laborales y cumplir fielmente con la presente política de uso de equipo de cómputo.

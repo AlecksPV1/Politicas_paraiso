@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Historial de Políticas Generadas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-0 text-dark">
+      <i class="bi bi-grid-1x2-fill text-primary me-2"></i>Historial de Políticas y Consignaciones
+    </h3>
+    <p class="text-muted small mb-0">Control y consulta de expedientes de equipo entregado a colaboradores</p>
+  </div>
+  <div>
+    <a href="{{ url_for('nueva_politica') }}" class="btn btn-primary fw-semibold shadow-sm px-3">
+      <i class="bi bi-plus-circle me-1"></i> Nueva Política
+    </a>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card stat-card bg-white p-3 shadow-sm border-start border-primary border-4">
+      <div class="text-muted small fw-semibold">TOTAL REGISTROS</div>
+      <div class="fs-3 fw-bold text-dark mt-1">{{ total_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card bg-white p-3 shadow-sm border-start border-success border-4">
+      <div class="text-muted small fw-semibold">FIRMA DIGITAL</div>
+      <div class="fs-3 fw-bold text-success mt-1">{{ signed_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card bg-white p-3 shadow-sm border-start border-warning border-4">
+      <div class="text-muted small fw-semibold">FIRMA PENDIENTE / FÍSICA</div>
+      <div class="fs-3 fw-bold text-warning mt-1">{{ pending_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card bg-white p-3 shadow-sm border-start border-info border-4">
+      <div class="text-muted small fw-semibold">ÚLTIMO FOLIO</div>
+      <div class="fs-4 fw-bold text-info mt-1">{{ last_folio or 'N/A' }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Table Card -->
+<div class="card card-custom shadow-sm">
+  <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h5 class="fw-bold mb-0 text-dark">
+      <i class="bi bi-table me-2 text-primary"></i>Expedientes Registrados
+    </h5>
+    
+    <div class="input-group" style="max-width: 320px;">
+      <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+      <input type="text" id="searchInput" class="form-control bg-light border-start-0" placeholder="Buscar por folio, empleado...">
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-custom mb-0" id="politicasTable">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Empleado</th>
+            <th>Equipo Asignado</th>
+            <th>Marca / Modelo</th>
+            <th>Fecha Entrega</th>
+            <th>Estado Físico</th>
+            <th>Estado Firma</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if politicas %}
+            {% for item in politicas %}
+            <tr>
+              <td>
+                <span class="badge-folio">{{ item['folio'] }}</span>
+              </td>
+              <td>
+                <strong>{{ item['nombre_empleado'] }}</strong>
+              </td>
+              <td>
+                <span class="text-secondary"><i class="bi bi-laptop me-1"></i>{{ item['equipo_asignado'] }}</span>
+              </td>
+              <td>
+                <small class="text-muted">{{ item['marca'] }} / {{ item['modelo'] }}</small>
+              </td>
+              <td>
+                <span class="small">{{ item['fecha_entrega'] }}</span>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border">{{ item['estado_fisico'] }}</span>
+              </td>
+              <td>
+                {% if 'Digitalmente' in item['estado_firma'] %}
+                  <span class="badge bg-success-subtle text-success border border-success-subtle">
+                    <i class="bi bi-check2-circle me-1"></i>Firmado
+                  </span>
+                {% else %}
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                    <i class="bi bi-pencil-square me-1"></i>Pendiente
+                  </span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                  <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-outline-primary" title="Descargar PDF Oficial" target="_blank">
+                    <i class="bi bi-download me-1"></i> PDF
+                  </a>
+                  <button type="button" class="btn btn-outline-secondary view-details-btn" 
+                          data-folio="{{ item['folio'] }}"
+                          data-empleado="{{ item['nombre_empleado'] }}"
+                          data-equipo="{{ item['equipo_asignado'] }}"
+                          data-marca="{{ item['marca'] }}"
+                          data-modelo="{{ item['modelo'] }}"
+                          data-fecha="{{ item['fecha_entrega'] }}"
+                          data-estado="{{ item['estado_fisico'] }}"
+                          data-notas="{{ item['notas'] }}"
+                          data-creacion="{{ item['fecha_creacion'] }}"
+                          data-firma="{{ item['estado_firma'] }}"
+                          title="Ver Ficha Técnica">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                No hay políticas generadas todavía.<br/>
+                <a href="{{ url_for('nueva_politica') }}" class="btn btn-sm btn-primary mt-2">
+                  <i class="bi bi-plus-circle me-1"></i> Crear la primera política
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for details -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white" style="background-color: #0f2b48 !important;">
+        <h5 class="modal-title fw-bold" id="detailsModalLabel">
+          <i class="bi bi-info-circle me-2"></i>Detalle de Expediente: <span id="modalFolio" class="text-info font-monospace"></span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Empleado:</span>
+            <strong id="modalEmpleado"></strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Equipo Asignado:</span>
+            <span id="modalEquipo" class="fw-semibold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Marca y Modelo:</span>
+            <span id="modalMarcaModelo"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Fecha de Entrega:</span>
+            <span id="modalFecha"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Estado Físico:</span>
+            <span id="modalEstado"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Estado de Firma:</span>
+            <span id="modalFirma"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Fecha de Creación:</span>
+            <small id="modalCreacion" class="text-muted"></small>
+          </li>
+        </ul>
+
+        <div class="mb-3">
+          <label class="form-label text-muted small fw-bold">NOTAS Y ACCESORIOS:</label>
+          <div class="p-2 bg-light rounded border text-secondary small" id="modalNotas" style="white-space: pre-wrap;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        <a id="modalDownloadBtn" href="#" class="btn btn-primary btn-sm" target="_blank">
+          <i class="bi bi-download me-1"></i> Descargar PDF Oficial
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Live filter for the table
+  const searchInput = document.getElementById('searchInput');
+  const table = document.getElementById('politicasTable');
+  
+  if (searchInput && table) {
+    searchInput.addEventListener('keyup', () => {
+      const filter = searchInput.value.toLowerCase();
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].textContent.toLowerCase();
+        if (rowText.includes(filter)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    });
+  }
+
+  // Modal handler
+  const modalEl = document.getElementById('detailsModal');
+  const detailsModal = new bootstrap.Modal(modalEl);
+
+  document.querySelectorAll('.view-details-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const folio = btn.getAttribute('data-folio');
+      document.getElementById('modalFolio').textContent = folio;
+      document.getElementById('modalEmpleado').textContent = btn.getAttribute('data-empleado');
+      document.getElementById('modalEquipo').textContent = btn.getAttribute('data-equipo');
+      document.getElementById('modalMarcaModelo').textContent = btn.getAttribute('data-marca') + ' / ' + btn.getAttribute('data-modelo');
+      document.getElementById('modalFecha').textContent = btn.getAttribute('data-fecha');
+      document.getElementById('modalEstado').textContent = btn.getAttribute('data-estado');
+      document.getElementById('modalFirma').textContent = btn.getAttribute('data-firma');
+      document.getElementById('modalCreacion').textContent = btn.getAttribute('data-creacion');
+      document.getElementById('modalNotas').textContent = btn.getAttribute('data-notas') || 'Sin observaciones.';
+      
+      const downloadBtn = document.getElementById('modalDownloadBtn');
+      downloadBtn.href = '/descargar/' + folio;
+
+      detailsModal.show();
+    });
+  });
+</script>
+{% endblock %}

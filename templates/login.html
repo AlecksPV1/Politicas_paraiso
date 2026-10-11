@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso al Sistema - Gestión de Políticas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="col-11 col-sm-9 col-md-7 col-lg-5 col-xl-4">
+    <div class="card card-custom shadow-lg">
+      <div class="card-header card-header-custom text-center py-4">
+        <div class="mb-2">
+          <i class="bi bi-shield-lock-fill text-warning fs-1"></i>
+        </div>
+        <h4 class="mb-1 text-white fw-bold">Acceso al Sistema</h4>
+        <p class="small text-white-50 mb-0">Gestión de Políticas y Consignación de Equipos</p>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold">
+              <i class="bi bi-key-fill text-primary me-1"></i> Contraseña Maestra:
+            </label>
+            <div class="input-group">
+              <input type="password" class="form-control form-control-lg" id="password" name="password" required autofocus placeholder="Ingresa la clave maestra">
+              <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
+                <i class="bi bi-eye" id="toggleIcon"></i>
+              </button>
+            </div>
+            <div class="form-text text-muted">
+              Se requiere autenticación para crear políticas y acceder a expedientes confidenciales.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold shadow-sm mt-3">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Entrar al Panel
+          </button>
+        </form>
+      </div>
+      <div class="card-footer bg-light text-center py-3 border-top-0 rounded-bottom-4">
+        <small class="text-muted"><i class="bi bi-lock me-1"></i> Acceso restringido a personal de Soporte y TI</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const toggleBtn = document.getElementById('togglePasswordBtn');
+  const pwdInput = document.getElementById('password');
+  const toggleIcon = document.getElementById('toggleIcon');
+
+  if (toggleBtn && pwdInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+      toggleIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+  }
+</script>
+{% endblock %}

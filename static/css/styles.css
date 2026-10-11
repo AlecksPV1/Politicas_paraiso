@@ -1,0 +1,134 @@
+:root {
+  --primary-color: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --secondary-color: #0f2b48;
+  --accent-color: #20c997;
+  --bg-light: #f8fafc;
+}
+
+body {
+  background-color: var(--bg-light);
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  color: #334155;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Navbar */
+.navbar-brand-custom {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.navbar-brand-custom img {
+  height: 38px;
+  width: auto;
+  border-radius: 4px;
+}
+
+/* Card Styling */
+.card-custom {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+}
+
+.card-header-custom {
+  background: linear-gradient(135deg, #0f2b48 0%, #1e3a5f 100%);
+  color: #ffffff;
+  border-top-left-radius: 11px !important;
+  border-top-right-radius: 11px !important;
+  padding: 1rem 1.5rem;
+}
+
+/* Canvas Signature Area */
+.signature-wrapper {
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+  transition: border-color 0.2s ease;
+}
+
+.signature-wrapper:hover, .signature-wrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+  background-color: #ffffff;
+}
+
+.signature-guide-line {
+  position: absolute;
+  bottom: 40px;
+  left: 10%;
+  right: 10%;
+  border-bottom: 1px dashed #94a3b8;
+  pointer-events: none;
+}
+
+.signature-guide-text {
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Stats Badges & Counters */
+.stat-card {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Table styling */
+.table-custom th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.table-custom td {
+  vertical-align: middle;
+  font-size: 0.92rem;
+}
+
+/* Badge Folio */
+.badge-folio {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 0.9rem;
+  padding: 0.35em 0.65em;
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+}
