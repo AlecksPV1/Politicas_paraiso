@@ -1,22 +1,62 @@
-POLÍTICA DE USO Y ASIGNACIÓN DE EQUIPO DE CÓMPUTO Y DISPOSITIVOS ELECTRÓNICOS
-CÓDIGO: SS - RH - PO - 001 | FOLIO: {folio}
+POLÍTICA DE USO Y ASIGNACIÓN DE EQUIPO DE COMPUTADORA / LAPTOP / DISPOSITIVO ELECTRÓNICO
+CÓDIGO: AP-RH-PO-001 | FOLIO: {folio}
 FECHA DE ASIGNACIÓN: {fecha_entrega}
 
 1. OBJETIVO
-Establecer los lineamientos generales para la asignación, resguardo y uso debido de equipos de cómputo, laptops y dispositivos electrónicos como herramientas de trabajo otorgadas al colaborador.
+Establecer los lineamientos generales, para la asignación y uso de servicios de Computadora / Laptop / Dispositivo Electrónico como herramienta de trabajo.
 
 2. ALCANCE
-Aplica a todo colaborador que, por la naturaleza de su puesto y funciones operativas, tenga asignado bajo su resguardo un equipo de cómputo o dispositivo electrónico propiedad de la empresa.
+Todo aquel colaborador, que, por la naturaleza de su puesto y funciones operativas, deba tener asignado un equipo de cómputo o dispositivo electrónico, como herramienta de trabajo.
 
-3. LINEAMIENTOS GENERALES DE USO
-a) El equipo asignado es una herramienta exclusiva de trabajo para el desempeño de las actividades laborales.
-b) El colaborador es el único responsable del cuidado físico, lógico y resguardo del equipo consignado. Queda estrictamente prohibido prestarlo, cederlo o facilitar su uso a terceras personas.
-c) El colaborador deberá reportar inmediatamente al área de Sistemas / Soporte e Infraestructura cualquier falla, daño, avería, pérdida o robo del equipo.
-d) Queda prohibida la instalación de software no autorizado o modificaciones no aprobadas a la configuración del sistema.
+3. DEFINICIONES Y/O ABREVIATURAS
+Colaborador: Persona física que presta sus servicios a la empresa.
+Equipo: Computadora / Laptop (con accesorios como cargador, mouse, etc.)
+Dispositivo electrónico: Smartphone, Tablet, Radio comunicador o cualquier otro equipo receptor o transmisor electrónico.
 
-4. SINIESTROS Y DEVOLUCIÓN
-En caso de robo o pérdida, el usuario deberá reportarlo de inmediato a su jefe directo y al área de Sistemas, así como presentar la denuncia correspondiente ante el Ministerio Público.
-Al término de la relación laboral o por reasignación, el colaborador deberá reintegrar el equipo y todos sus accesorios en óptimas condiciones de funcionamiento.
+4. DESARROLLO - ASIGNACIÓN
+El tipo de asignación ya sea de tipo temporal o permanente, así como los alcances y coberturas serán en base a las necesidades operativas de las funciones de cada colaborador.
+Todas las asignaciones a puestos actuales, así como los nuevos puestos con derecho a equipo de cómputo o dispositivo electrónico, deberán ser autorizados por el área de soporte e infraestructura.
+
+5. COMPRA
+Los modelos de equipos, dispositivo electrónico y accesorios asignados se acotarán a los estándares determinados por el área de soporte e infraestructura de acuerdo con la información presentada por el área de Consultoría.
+Los gastos en los que se incurra por la compra, contratación, mantenimiento y servicios adicionales serán con cargo al Área/Dirección del colaborador.
+La autorización final de compra de equipos de cómputo, dispositivo electrónico, así como los accesorios en caso de ser Laptop quedará en manos del Área/Dirección del colaborador.
+Recursos Humanos deberá entregar al área de soporte e infraestructura, la solicitud de equipo de cómputo o dispositivo electrónico, debidamente llenada y autorizada por el director del área correspondiente.
+Una vez recibida la solicitud, el área de soporte e infraestructura procederá a solicitar por escrito la compra de una Computadora / Laptop, dispositivo electrónico o en su caso, reasignar un equipo disponible con las características solicitadas.
+En ningún caso se pagará accesorios especiales y/o adicionales extras a los entregados con el equipo de cómputo.
+
+6. ENTREGA
+La entrega del equipo deberá realizarse en un máximo de 10 días hábiles a partir de la entrega del formato al área de soporte e infraestructura.
+A la entrega del equipo el colaborador deberá firmar la carta responsiva en la cual vendrán perfectamente identificados todos los datos correspondientes tanto del equipo de cómputo como de los accesorios. El usuario deberá exigir una copia como soporte.
+El área de soporte e infraestructura dará de alta en el inventario de equipo las características de HW y SW, propietario, así como la persona a la que se le asigna.
+
+7. USO
+La adquisición y asignación del equipo de cómputo o dispositivo electrónico, se basa en la necesidad de contar con una herramienta de trabajo con el personal designado, por lo que su uso quedará restringido a cuestiones de este.
+El colaborador no podrá bajo ningún concepto, prestar o facilitar el equipo de cómputo o dispositivo electrónico a terceras personas, siendo su responsabilidad que su uso sea solo personal, ya que esta función la tiene asignada el área de soporte e infraestructura.
+El usuario deberá reportar directamente al área de soporte e infraestructura cualquier asunto relacionado con los siguientes requerimientos directos de la Computadora / Laptop / Dispositivo Electrónico:
+- Sustitución, fallas o daños en el equipo.
+- Asistencia técnica personalizada para fines de soporte.
+- Pérdida o robo de equipo (en caso de asignación de Laptop / dispositivo electrónico).
+- Daño físico en equipo y actualización de software.
+
+8. SINIESTROS
+El usuario deberá actuar inmediatamente en caso de:
+a) Robo o pérdida (en caso de asignación de Laptop / dispositivo electrónico):
+- Reportar el robo al área de soporte e infraestructura de manera inmediata.
+- Levantar un acta ante el ministerio público correspondiente a la delegación donde sucedió el incidente.
+- Entregar el acta levantada en original y con los sellos correspondientes al área de soporte e infraestructura y solicitar copia certificada.
+- Notificar a su jefe inmediato de la situación.
+b) Daños materiales:
+- Reportar al área de soporte e infraestructura las descomposturas, daño parcial o total, mal funcionamiento en el equipo de cómputo o dispositivo electrónico, así como fallas en el servicio de software, tanto para la reparación o sustitución de este.
+- Notificar al jefe inmediato de la situación.
+
+9. RETIRO DEL EQUIPO
+El usuario deberá regresar al área de soporte e infraestructura, el equipo completo junto con sus accesorios (en caso de asignación de Laptop / dispositivo electrónico) en perfectas condiciones y operando correctamente, en los casos de:
+- Baja (requisito necesario para tener derecho a finiquito). En caso de no entregar el equipo se descontará el monto del finiquito y el trabajador se compromete a pagar la totalidad de este.
+- Por reasignación a cualquier otro usuario que requiera del equipo o dispositivo electrónico.
+En NINGÚN caso, el área en la cual se encuentra el colaborador que cause baja, podrá quedarse con el equipo; éste deberá ser entregado al área de soporte e infraestructura y/o Recursos Humanos.
+La empresa se reserva el derecho de retirar el equipo en cualquier momento, por mal uso o incumplimiento de los lineamientos de la presente política.
+La empresa no se hace responsable por el uso, pérdida o daño de los equipos o dispositivo electrónico que son personales y se utilicen para el desarrollo de sus funciones.
 
 ============================================================
 DATOS DEL EQUIPO CONSIGNADO
@@ -31,6 +71,30 @@ Estado Físico: {estado_fisico}
 Notas / Accesorios Extra: {notas}
 
 ============================================================
-RESPONSIVA DE RECEPCIÓN Y CONFORMIDAD
+RESPONSIVA DE RECEPCIÓN
 ============================================================
-En el presente acto recibo de LA EMPRESA en carácter de herramienta de trabajo el equipo descrito anteriormente. Me comprometo a cuidarlo, utilizarlo únicamente para fines laborales y cumplir fielmente con la presente política de uso de equipo de cómputo.
+En el presente acto recibo de "LA EMPRESA" en carácter de herramienta de trabajo "El Equipo de Cómputo o Dispositivo Electrónico" descrito en la parte inicial del presente documento.
+
+Así mismo acepto y me obligo con "LA EMPRESA" a:
+
+1) Utilizar de manera adecuada "El Equipo de Cómputo o Dispositivo Electrónico" que se me ha asignado única y exclusivamente para las funciones solicitadas por "La Empresa".
+
+2) En caso de cualquier falla y/o daño que presente "El Equipo de Cómputo o Dispositivo Electrónico", me obligo a reportar el mismo de inmediato al correo: soporte@paraisogolf.com.mx
+
+3) En el caso de reparaciones me obligo a cumplir los lineamientos que para tal efecto me indique "La Empresa".
+
+4) Llevar directamente "El Equipo de Cómputo o Dispositivo Electrónico" a donde "La Empresa" solicite.
+
+5) Apegarme a las Políticas de Seguridad Informática de la empresa.
+
+6) En su caso entregarlo a Recursos Humanos.
+
+7) En caso de que "La Empresa" ya no considere necesario el uso de "El Equipo de Cómputo o Dispositivo Electrónico" para mis funciones, podrá requerirme la devolución y/o entrega inmediata del mismo.
+
+8) En caso de robo o extravío de "El Equipo de Cómputo o Dispositivo Electrónico" amparado en este documento me obligo a presentar una denuncia de robo ante autoridad en el Ministerio Público; en caso de que dicha denuncia no sea entregada me obligo a restituirle a "La Empresa" el valor de "El Equipo de Cómputo o Dispositivo Electrónico" conforme lo que establece en el presente documento.
+
+9) Si "El Equipo de Cómputo o Dispositivo Electrónico" sufre daño irreparable por negligencia en el uso o cualquiera imputable al usuario por no seguir las recomendaciones de uso y mantenimiento del equipo, el usuario deberá restituir a "La Empresa" el valor total del mismo.
+
+10) Cualquier sanción o acción penal que derive de la falsedad de declaraciones ante la autoridad o de utilizar "El Equipo de Cómputo o Dispositivo Electrónico" de manera que llegue a ser constitutiva de un ilícito o delito será absoluta responsabilidad de "El Empleado", liberando en el presente acto a "La Empresa" así como obligándose al pago de daños y perjuicios que le haya ocasionado dicha acción a "La Empresa", adicional en su caso el pago de la restitución de "El Equipo de Cómputo o Dispositivo Electrónico" correspondiente.
+
+Es por lo anterior que suscribo el presente documento aceptando de manera libre y de conformidad el contenido y las obligaciones que se desprenden de los supuestos establecidos en el presente documento.

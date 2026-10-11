@@ -178,7 +178,7 @@ def generate_policy_pdf(data, signature_path=None):
             logo_img if logo_img else Paragraph("<b>LOGO DE LA EMPRESA</b>", subtitle_style),
             Paragraph(
                 "<b>POLÍTICA DE USO Y CONSIGNACIÓN DE EQUIPO DE CÓMPUTO</b><br/>"
-                "<font size=7 color='#6c757d'>CÓDIGO: SS - RH - PO - 001 | VERSIÓN 1.0 | ÁREA DE SISTEMAS</font>",
+                "<font size=7 color='#6c757d'>CÓDIGO: AP-RH-PO-001 | VERSIÓN 3.0 | ÁREA DE SISTEMAS</font>",
                 title_style
             ),
             Paragraph(
@@ -270,7 +270,16 @@ def generate_policy_pdf(data, signature_path=None):
         # Clean inline line breaks to standard html breaks
         clean_html = block.replace("\n", "<br/>")
         
-        if clean_html.startswith("1.") or clean_html.startswith("2.") or clean_html.startswith("3.") or clean_html.startswith("4.") or "RESPONSIVA" in clean_html:
+        # Detect section headings (numbered 1-9) and RESPONSIVA
+        is_heading = False
+        for n in range(1, 10):
+            if clean_html.startswith(f"{n}."):
+                is_heading = True
+                break
+        if "RESPONSIVA" in clean_html:
+            is_heading = True
+        
+        if is_heading:
             story.append(Paragraph(f"<b>{clean_html}</b>", body_style))
         else:
             story.append(Paragraph(clean_html, body_style))
