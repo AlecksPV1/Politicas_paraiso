@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.height = rect.height * ratio;
     
     ctx.scale(ratio, ratio);
-    ctx.strokeStyle = '#0a1d37';
+    ctx.strokeStyle = '#1A2421';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';

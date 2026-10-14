@@ -1,42 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %}Acceso al Sistema - Gestión de Políticas{% endblock %}
+{% block title %}Acceso al Sistema — Paraíso Country Club{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+<div class="row justify-content-center align-items-center" style="min-height: 72vh;">
   <div class="col-11 col-sm-9 col-md-7 col-lg-5 col-xl-4">
-    <div class="card card-custom shadow-lg">
+    <div class="card card-custom shadow-sm border">
+      <!-- Card Header: Deep Fairway with Luxury Gold Accent -->
       <div class="card-header card-header-custom text-center py-4">
         <div class="mb-2">
-          <i class="bi bi-shield-lock-fill text-warning fs-1"></i>
+          <span class="d-inline-flex p-3 rounded-circle" style="background: rgba(179, 146, 76, 0.15); border: 1px solid rgba(179, 146, 76, 0.35);">
+            <i class="bi bi-shield-lock text-warning fs-3" style="color: var(--gold) !important;"></i>
+          </span>
         </div>
-        <h4 class="mb-1 text-white fw-bold">Acceso al Sistema</h4>
-        <p class="small text-white-50 mb-0">Gestión de Políticas y Consignación de Equipos</p>
+        <h3 class="mb-1 text-white display-font" style="font-size: 1.55rem;">Acceso al Sistema</h3>
+        <p class="mb-0 label-eyebrow" style="color: var(--gold-light);">Paraíso Country Club &bull; Activos TI</p>
       </div>
-      <div class="card-body p-4">
+
+      <div class="card-body p-4 p-md-4">
         <form method="POST" action="{{ url_for('login') }}">
           <div class="mb-3">
-            <label for="password" class="form-label fw-semibold">
-              <i class="bi bi-key-fill text-primary me-1"></i> Contraseña Maestra:
+            <label for="password" class="form-label-club label-eyebrow d-block mb-1">
+              Contraseña Maestra
             </label>
             <div class="input-group">
-              <input type="password" class="form-control form-control-lg" id="password" name="password" required autofocus placeholder="Ingresa la clave maestra">
-              <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
-                <i class="bi bi-eye" id="toggleIcon"></i>
+              <input type="password" class="form-control" id="password" name="password" required autofocus placeholder="Ingresa la clave maestra del club">
+              <button class="btn btn-outline-sand border-start-0" type="button" id="togglePasswordBtn" title="Mostrar/Ocultar contraseña">
+                <i class="bi bi-eye text-muted" id="toggleIcon"></i>
               </button>
             </div>
-            <div class="form-text text-muted">
-              Se requiere autenticación para crear políticas y acceder a expedientes confidenciales.
+            <div class="form-text-club mt-1.5">
+              Se requiere autenticación autorizada para generar políticas y consultar expedientes de resguardo.
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold shadow-sm mt-3">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Entrar al Panel
+          <button type="submit" class="btn btn-primary-club w-100 mt-3 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Ingresar al Panel</span>
           </button>
         </form>
       </div>
-      <div class="card-footer bg-light text-center py-3 border-top-0 rounded-bottom-4">
-        <small class="text-muted"><i class="bi bi-lock me-1"></i> Acceso restringido a personal de Soporte y TI</small>
+
+      <div class="card-footer text-center py-3 border-top" style="background-color: var(--surface-cream); border-color: var(--sand-light) !important;">
+        <span class="label-eyebrow" style="font-size: 10px; color: var(--ink-secondary);">
+          <i class="bi bi-lock-fill me-1" style="color: var(--primary);"></i> Acceso Restringido a Personal TI &bull; Confidencial
+        </span>
       </div>
     </div>
   </div>
@@ -53,7 +61,7 @@
     toggleBtn.addEventListener('click', () => {
       const isPassword = pwdInput.type === 'password';
       pwdInput.type = isPassword ? 'text' : 'password';
-      toggleIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+      toggleIcon.className = isPassword ? 'bi bi-eye-slash text-muted' : 'bi bi-eye text-muted';
     });
   }
 </script>

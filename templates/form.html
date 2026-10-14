@@ -1,50 +1,65 @@
 {% extends "base.html" %}
 
-{% block title %}Nueva Política de Consignación de Equipo{% endblock %}
+{% block title %}Nueva Política de Consignación — Paraíso Country Club{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-10 col-xl-9">
-    <div class="card card-custom shadow-sm mb-5">
-      <div class="card-header card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="card card-custom mb-5">
+      <!-- Card Header: Deep Fairway with Gold & White accents -->
+      <div class="card-header card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-          <h4 class="mb-0 text-white fw-bold">
-            <i class="bi bi-file-earmark-text me-2"></i>Nueva Política de Consignación de Equipo
-          </h4>
-          <small class="text-white-50">Registro, asignación de folio e incrustación de firma digital</small>
+          <h3 class="card-header-title text-white">
+            Nueva Política de Consignación de Equipo
+          </h3>
+          <span class="label-eyebrow" style="color: var(--gold-light); font-size: 11px;">
+            Paraíso Country Club &bull; Resguardo Oficial de Cómputo
+          </span>
         </div>
-        <span class="badge bg-light text-dark fs-6 px-3 py-2 border shadow-sm">
-          <i class="bi bi-upc-scan text-primary me-1"></i> Folio asignado: <strong>{{ next_folio }}</strong>
-        </span>
+        <div>
+          <span class="chip-pill chip-folio" style="background-color: var(--gold-container); color: var(--gold); border-color: rgba(179, 146, 76, 0.4); font-size: 12.5px; padding: 6px 14px;">
+            <i class="bi bi-upc-scan me-1"></i> Folio: <strong>{{ next_folio }}</strong>
+          </span>
+        </div>
       </div>
 
       <div class="card-body p-4 p-md-5">
         <form id="policyForm" method="POST" action="{{ url_for('nueva_politica') }}">
           
-          <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">
-            <i class="bi bi-person-badge text-primary me-2"></i>1. Datos del Colaborador y Asignación
-          </h5>
+          <!-- Section 1 -->
+          <div class="section-step-title">
+            <span class="step-num-badge">01</span>
+            <span>Datos del Colaborador y Asignación</span>
+          </div>
 
           <div class="row g-3 mb-4">
             <div class="col-md-8">
-              <label for="nombre_empleado" class="form-label fw-semibold">Nombre Completo del Empleado <span class="text-danger">*</span></label>
+              <label for="nombre_empleado" class="form-label-club">
+                Nombre Completo del Empleado <span class="text-danger">*</span>
+              </label>
               <input type="text" class="form-control" id="nombre_empleado" name="nombre_empleado" required placeholder="Ej. Alfredo De La Sancha Núñez">
-              <div class="form-text">Nombre tal como figura en su identificación oficial o expediente de RRHH.</div>
+              <div class="form-text-club">Nombre tal como figura en su expediente oficial o credencial del club.</div>
             </div>
 
             <div class="col-md-4">
-              <label for="fecha_entrega" class="form-label fw-semibold">Fecha de Entrega <span class="text-danger">*</span></label>
+              <label for="fecha_entrega" class="form-label-club">
+                Fecha de Entrega <span class="text-danger">*</span>
+              </label>
               <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega" required value="{{ today_date }}">
             </div>
           </div>
 
-          <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">
-            <i class="bi bi-laptop text-primary me-2"></i>2. Especificaciones del Equipo Consignado
-          </h5>
+          <!-- Section 2 -->
+          <div class="section-step-title mt-4">
+            <span class="step-num-badge">02</span>
+            <span>Especificaciones del Equipo Consignado</span>
+          </div>
 
           <div class="row g-3 mb-4">
             <div class="col-md-4">
-              <label for="equipo_asignado" class="form-label fw-semibold">Equipo Asignado <span class="text-danger">*</span></label>
+              <label for="equipo_asignado" class="form-label-club">
+                Equipo Asignado <span class="text-danger">*</span>
+              </label>
               <select class="form-select" id="equipo_asignado" name="equipo_asignado" required>
                 <option value="" selected disabled>Seleccione un tipo...</option>
                 <option value="Laptop / Portátil">Laptop / Portátil</option>
@@ -58,17 +73,23 @@
             </div>
 
             <div class="col-md-4">
-              <label for="marca" class="form-label fw-semibold">Marca <span class="text-danger">*</span></label>
+              <label for="marca" class="form-label-club">
+                Marca <span class="text-danger">*</span>
+              </label>
               <input type="text" class="form-control" id="marca" name="marca" required placeholder="Ej. Lenovo, Dell, Apple, Hytera">
             </div>
 
             <div class="col-md-4">
-              <label for="modelo" class="form-label fw-semibold">Modelo <span class="text-danger">*</span></label>
+              <label for="modelo" class="form-label-club">
+                Modelo <span class="text-danger">*</span>
+              </label>
               <input type="text" class="form-control" id="modelo" name="modelo" required placeholder="Ej. ThinkPad T14 / BD506">
             </div>
 
             <div class="col-md-6">
-              <label for="estado_fisico" class="form-label fw-semibold">Estado Físico del Equipo <span class="text-danger">*</span></label>
+              <label for="estado_fisico" class="form-label-club">
+                Estado Físico del Equipo <span class="text-danger">*</span>
+              </label>
               <select class="form-select" id="estado_fisico" name="estado_fisico" required>
                 <option value="" selected disabled>Seleccione el estado...</option>
                 <option value="Nuevo (En caja con accesorios originales)">Nuevo (En caja con accesorios originales)</option>
@@ -79,34 +100,38 @@
             </div>
 
             <div class="col-md-6">
-              <label for="notas" class="form-label fw-semibold">Notas y Accesorios Extra <span class="text-danger">*</span></label>
-              <textarea class="form-control" id="notas" name="notas" rows="2" required placeholder="Números de serie, cargador, maletín, mouse, cables o cualquier observación pertinente..."></textarea>
+              <label for="notas" class="form-label-club">
+                Notas y Accesorios Extra <span class="text-danger">*</span>
+              </label>
+              <textarea class="form-control" id="notas" name="notas" rows="2" required placeholder="Números de serie, cargador original, cables, mouse, funda o especificaciones adicionales..."></textarea>
             </div>
           </div>
 
-          <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-            <i class="bi bi-pen text-primary me-2"></i>3. Firma Digital del Empleado (Opcional en pantalla)
-          </h5>
+          <!-- Section 3 -->
+          <div class="section-step-title mt-4">
+            <span class="step-num-badge">03</span>
+            <span>Firma Digital del Colaborador (Opcional en pantalla)</span>
+          </div>
 
           <p class="text-muted small mb-3">
-            El colaborador puede trazar su firma en el recuadro interactivo (compatible con ratón y pantallas táctiles). La firma será incrustada automáticamente en el documento PDF oficial antes de su descarga. También se puede generar el documento con espacio en blanco para firma autógrafa física.
+            El colaborador puede plasmar su firma digital en el recuadro interactivo (compatible con pantallas táctiles, tabletas y ratón). Si prefiere firma autógrafa en papel, deje el recuadro vacío y el sistema generará el PDF listo para impresión.
           </p>
 
           <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="badge bg-secondary-subtle text-dark border">
-                <i class="bi bi-brush me-1"></i> Panel de Trazo Digital
+              <span class="chip-pill chip-folio">
+                <i class="bi bi-brush me-1 text-muted"></i> Panel de Trazo Digital
               </span>
-              <button type="button" class="btn btn-outline-danger btn-sm" id="clearSignatureBtn">
-                <i class="bi bi-eraser-fill me-1"></i> Borrar Firma
+              <button type="button" class="btn btn-outline-sand btn-sm" id="clearSignatureBtn" style="font-size: 0.8rem;">
+                <i class="bi bi-eraser me-1 text-danger"></i> Borrar Firma
               </button>
             </div>
 
-            <div class="signature-wrapper shadow-inner">
+            <div class="signature-wrapper">
               <canvas id="signatureCanvas" class="signature-canvas"></canvas>
               <div class="signature-guide-line"></div>
               <div class="signature-guide-text">
-                <i class="bi bi-pencil me-1"></i> Dibuje su firma aquí con el dedo o puntero
+                <i class="bi bi-pen me-1"></i> Dibuje aquí la firma del colaborador con el dedo o puntero
               </div>
             </div>
 
@@ -114,19 +139,22 @@
             <input type="hidden" name="signature_data" id="signature_data">
           </div>
 
-          <div class="alert alert-info d-flex align-items-center small py-2 px-3 mb-4">
-            <i class="bi bi-info-circle-fill fs-5 me-2 text-info"></i>
+          <!-- Alert / Summary -->
+          <div class="alert-club-info d-flex align-items-start gap-2.5 mb-4">
+            <i class="bi bi-shield-check fs-5 mt-0.5" style="color: var(--primary);"></i>
             <div>
-              Al generar la política, el sistema inyectará la información en la plantilla oficial, aplicará el logotipo corporativo, generará el PDF y almacenará el registro permanente en la base de datos.
+              <strong>Validación Oficial:</strong> Al registrar la política, se aplicará el formato institucional con encabezado <code>AP-RH-PO-001</code> (Versión 3.0), logotipo oficial de Paraíso Country Club y generación automática del documento PDF para resguardo y archivo.
             </div>
           </div>
 
-          <div class="d-flex justify-content-end gap-3">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary px-4">
-              <i class="bi bi-x-circle me-1"></i> Cancelar
+          <!-- Action buttons -->
+          <div class="d-flex justify-content-end gap-3 pt-2">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-sand px-4">
+              Cancelar
             </a>
-            <button type="submit" class="btn btn-primary px-4 fw-bold shadow">
-              <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generar Política y PDF
+            <button type="submit" class="btn btn-primary-club px-4 d-inline-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-check"></i>
+              <span>Generar Política y PDF</span>
             </button>
           </div>
 

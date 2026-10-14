@@ -116,7 +116,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica-Bold',
         fontSize=12,
         leading=15,
-        textColor=colors.HexColor('#0f2b48'),
+        textColor=colors.HexColor('#1B4D3E'),
         alignment=1 # Center
     )
 
@@ -126,7 +126,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica',
         fontSize=8.5,
         leading=11,
-        textColor=colors.HexColor('#495057'),
+        textColor=colors.HexColor('#53635B'),
         alignment=1
     )
 
@@ -136,7 +136,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica-Bold',
         fontSize=10,
         leading=13,
-        textColor=colors.HexColor('#0f2b48'),
+        textColor=colors.HexColor('#1B4D3E'),
         spaceBefore=8,
         spaceAfter=4
     )
@@ -147,7 +147,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica',
         fontSize=8.5,
         leading=12,
-        textColor=colors.HexColor('#212529')
+        textColor=colors.HexColor('#1A2421')
     )
 
     table_label_style = ParagraphStyle(
@@ -156,7 +156,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica-Bold',
         fontSize=8.5,
         leading=11,
-        textColor=colors.HexColor('#0f2b48')
+        textColor=colors.HexColor('#1B4D3E')
     )
 
     table_value_style = ParagraphStyle(
@@ -165,7 +165,7 @@ def generate_policy_pdf(data, signature_path=None):
         fontName='Helvetica',
         fontSize=8.5,
         leading=11,
-        textColor=colors.HexColor('#212529')
+        textColor=colors.HexColor('#1A2421')
     )
 
     story = []
@@ -175,16 +175,16 @@ def generate_policy_pdf(data, signature_path=None):
     
     header_info = [
         [
-            logo_img if logo_img else Paragraph("<b>LOGO DE LA EMPRESA</b>", subtitle_style),
+            logo_img if logo_img else Paragraph("<b>PARAÍSO COUNTRY CLUB</b>", subtitle_style),
             Paragraph(
                 "<b>POLÍTICA DE USO Y CONSIGNACIÓN DE EQUIPO DE CÓMPUTO</b><br/>"
-                "<font size=7 color='#6c757d'>CÓDIGO: AP-RH-PO-001 | VERSIÓN 3.0 | ÁREA DE SISTEMAS</font>",
+                "<font size=7 color='#53635B'>CÓDIGO: AP-RH-PO-001 | VERSIÓN 3.0 | ÁREA DE SISTEMAS</font>",
                 title_style
             ),
             Paragraph(
-                f"<font size=8 color='#6c757d'>FOLIO OFICIAL</font><br/>"
-                f"<font size=12 color='#0d6efd'><b>{folio}</b></font><br/>"
-                f"<font size=7 color='#6c757d'>Fecha: {data.get('fecha_entrega')}</font>",
+                f"<font size=8 color='#53635B'>FOLIO OFICIAL</font><br/>"
+                f"<font size=12 color='#1B4D3E'><b>{folio}</b></font><br/>"
+                f"<font size=7 color='#53635B'>Fecha: {data.get('fecha_entrega')}</font>",
                 subtitle_style
             )
         ]
@@ -196,9 +196,9 @@ def generate_policy_pdf(data, signature_path=None):
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
         ('ALIGN', (1, 0), (1, 0), 'CENTER'),
         ('ALIGN', (2, 0), (2, 0), 'CENTER'),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#ced4da')),
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ced4da')),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#D8CDBD')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FDFBF7')),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E8DFD0')),
         ('TOPPADDING', (0, 0), (-1, -1), 6),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
     ]))
@@ -231,17 +231,17 @@ def generate_policy_pdf(data, signature_path=None):
             Paragraph("Notas / Accesorios:", table_label_style),
             Paragraph(data.get('notas') if data.get('notas') else "Sin observaciones adicionales", table_value_style),
             Paragraph("Estado de Firma:", table_label_style),
-            Paragraph("<font color='#198754'><b>Registrada Digitalmente</b></font>" if signature_path else "<font color='#dc3545'><b>Pendiente</b></font>", table_value_style)
+            Paragraph("<font color='#1B4D3E'><b>Registrada Digitalmente</b></font>" if signature_path else "<font color='#B3924C'><b>Pendiente</b></font>", table_value_style)
         ]
     ]
 
     details_table = Table(details_data, colWidths=[120, 160, 120, 140])
     details_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f1f4f8')),
-        ('BACKGROUND', (2, 0), (2, -1), colors.HexColor('#f1f4f8')),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#ced4da')),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e9ecef')),
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F4EFE6')),
+        ('BACKGROUND', (2, 0), (2, -1), colors.HexColor('#F4EFE6')),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#D8CDBD')),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E8DFD0')),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
         ('LEFTPADDING', (0, 0), (-1, -1), 6),
