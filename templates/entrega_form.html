@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Acta de Entrega y No Adeudo — Paraíso Country Club{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10 col-xl-9">
+    <div class="card card-custom mb-5">
+      <!-- Card Header: Deep Fairway with Gold & White accents -->
+      <div class="card-header card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h3 class="card-header-title text-white">
+            Acta de Entrega-Recepción y Carta de No Adeudo
+          </h3>
+          <span class="label-eyebrow" style="color: var(--gold-light); font-size: 11px;">
+            Paraíso Country Club &bull; Deslinde Oficial de Activos TI para Finiquito
+          </span>
+        </div>
+        <div>
+          <span class="chip-pill chip-folio" style="background-color: var(--gold-container); color: var(--gold); border-color: rgba(179, 146, 76, 0.4); font-size: 12.5px; padding: 6px 14px;">
+            <i class="bi bi-shield-check me-1"></i> Folio Devolución: <strong>{{ next_folio_entrega }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body p-4 p-md-5">
+        <form id="policyForm" method="POST" action="{{ url_for('nueva_devolucion') }}">
+          
+          <!-- Section 1 -->
+          <div class="section-step-title">
+            <span class="step-num-badge">01</span>
+            <span>Vinculación con Folio de Asignación y Datos del Colaborador</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="folio_select" class="form-label-club">
+                Seleccionar Folio de Asignación Original <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="folio_select" required>
+                <option value="" disabled {% if not politica_seleccionada %}selected{% endif %}>Seleccione un expediente de resguardo...</option>
+                {% for pol in politicas %}
+                  <option value="{{ pol['folio'] }}"
+                          data-nombre="{{ pol['nombre_empleado'] }}"
+                          data-equipo="{{ pol['equipo_asignado'] }}"
+                          data-marca="{{ pol['marca'] }}"
+                          data-modelo="{{ pol['modelo'] }}"
+                          {% if politica_seleccionada and politica_seleccionada['folio'] == pol['folio'] %}selected{% endif %}>
+                    {{ pol['folio'] }} — {{ pol['nombre_empleado'] }} ({{ pol['equipo_asignado'] }})
+                  </option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="folio_politica" id="folio_politica" value="{{ politica_seleccionada['folio'] if politica_seleccionada else '' }}">
+              <div class="form-text-club">Vincula esta entrega con el contrato/política original de resguardo.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="motivo_entrega" class="form-label-club">
+                Motivo de la Entrega <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="motivo_entrega" name="motivo_entrega" required>
+                <option value="Baja Definitiva / Finiquito Laboral" selected>Baja Definitiva / Finiquito Laboral</option>
+                <option value="Renuncia Voluntaria">Renuncia Voluntaria</option>
+                <option value="Rescisión de Relación Laboral">Rescisión de Relación Laboral</option>
+                <option value="Reasignación / Cambio de Puesto Interno">Reasignación / Cambio de Puesto Interno</option>
+                <option value="Renovación / Sustitución de Equipo">Renovación / Sustitución de Equipo</option>
+                <option value="Término de Proyecto o Asignación Temporal">Término de Proyecto o Asignación Temporal</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="nombre_empleado" class="form-label-club">
+                Nombre Completo del Colaborador <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="nombre_empleado" name="nombre_empleado" required 
+                     value="{{ politica_seleccionada['nombre_empleado'] if politica_seleccionada else '' }}" 
+                     placeholder="Nombre del colaborador">
+            </div>
+
+            <div class="col-md-3">
+              <label for="puesto_departamento" class="form-label-club">
+                Puesto / Departamento
+              </label>
+              <input type="text" class="form-control" id="puesto_departamento" name="puesto_departamento" 
+                     placeholder="Ej. Operaciones, Ventas, TI">
+            </div>
+
+            <div class="col-md-3">
+              <label for="fecha_devolucion" class="form-label-club">
+                Fecha de Devolución <span class="text-danger">*</span>
+              </label>
+              <input type="date" class="form-control" id="fecha_devolucion" name="fecha_devolucion" required value="{{ today_date }}">
+            </div>
+          </div>
+
+          <!-- Section 2 -->
+          <div class="section-step-title mt-4">
+            <span class="step-num-badge">02</span>
+            <span>Inspección Física, Técnica y Accesorios del Equipo</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="equipo_asignado" class="form-label-club">
+                Equipo Asignado <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="equipo_asignado" name="equipo_asignado" required 
+                     value="{{ politica_seleccionada['equipo_asignado'] if politica_seleccionada else '' }}" 
+                     placeholder="Tipo de equipo">
+            </div>
+
+            <div class="col-md-4">
+              <label for="marca" class="form-label-club">
+                Marca <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="marca" name="marca" required 
+                     value="{{ politica_seleccionada['marca'] if politica_seleccionada else '' }}" 
+                     placeholder="Marca">
+            </div>
+
+            <div class="col-md-4">
+              <label for="modelo" class="form-label-club">
+                Modelo <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="modelo" name="modelo" required 
+                     value="{{ politica_seleccionada['modelo'] if politica_seleccionada else '' }}" 
+                     placeholder="Modelo">
+            </div>
+
+            <div class="col-md-6">
+              <label for="estado_fisico_entrega" class="form-label-club">
+                Estado Físico en la Entrega <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="estado_fisico_entrega" name="estado_fisico_entrega" required>
+                <option value="Excelente / Sin daños ni rayaduras" selected>Excelente / Sin daños ni rayaduras</option>
+                <option value="Bueno / Con desgaste natural por uso">Bueno / Con desgaste natural por uso</option>
+                <option value="Regular / Con rayaduras o detalles estéticos">Regular / Con rayaduras o detalles estéticos</option>
+                <option value="Dañado / Con golpes, fracturas o maltrato severo">Dañado / Con golpes, fracturas o maltrato severo</option>
+                <option value="Inoperativo / Daño total">Inoperativo / Daño total</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="operatividad" class="form-label-club">
+                Operatividad y Funcionamiento Técnico <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="operatividad" name="operatividad" required>
+                <option value="100% Operativo y Verificado (Sin bloqueos ni contraseñas)" selected>100% Operativo y Verificado (Sin bloqueos ni contraseñas)</option>
+                <option value="Operativo con lentitud o detalle menor de software">Operativo con lentitud o detalle menor de software</option>
+                <option value="Falla en teclado, puertos o batería">Falla en teclado, puertos o batería</option>
+                <option value="Falla de pantalla / display o visualización">Falla de pantalla / display o visualización</option>
+                <option value="No enciende / Daño en tarjeta lógica o hardware">No enciende / Daño en tarjeta lógica o hardware</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="accesorios_devueltos" class="form-label-club">
+                Accesorios Devueltos e Inventariados <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="accesorios_devueltos" name="accesorios_devueltos" required 
+                     value="Cargador original, Cables, Mouse, Maletín" 
+                     placeholder="Ej. Cargador tipo C, mouse, maletín, audífonos...">
+            </div>
+
+            <div class="col-md-6">
+              <label for="accesorios_faltantes" class="form-label-club">
+                Accesorios Faltantes / Dañados <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="accesorios_faltantes" name="accesorios_faltantes" required 
+                     value="Ninguno" 
+                     placeholder="Indica 'Ninguno' o el detalle de lo que no se entregó">
+            </div>
+          </div>
+
+          <!-- Section 3 -->
+          <div class="section-step-title mt-4">
+            <span class="step-num-badge">03</span>
+            <span>Dictamen Oficial de No Adeudo para Recursos Humanos</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="dictamen_no_adeudo" class="form-label-club">
+                Dictamen Técnico de No Adeudo <span class="text-danger">*</span>
+              </label>
+              <select class="form-select fw-bold" id="dictamen_no_adeudo" name="dictamen_no_adeudo" required style="color: var(--primary);">
+                <option value="LIBERADO (NO ADEUDO)" selected>LIBERADO (NO ADEUDO) — Finiquito Autorizado</option>
+                <option value="CON RETENCIÓN / OBSERVACIONES">CON RETENCIÓN / OBSERVACIONES — Cobro en Finiquito</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label for="monto_retencion" class="form-label-club">
+                Monto Cargo / Retención
+              </label>
+              <input type="text" class="form-control" id="monto_retencion" name="monto_retencion" value="$0.00" placeholder="$0.00">
+            </div>
+
+            <div class="col-md-3">
+              <label for="responsable_sistemas" class="form-label-club">
+                Responsable TI que Recibe <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="responsable_sistemas" name="responsable_sistemas" required 
+                     placeholder="Nombre de quien recibe en TI" value="Área de Sistemas e Infraestructura">
+            </div>
+
+            <div class="col-12">
+              <label for="observaciones" class="form-label-club">
+                Observaciones Técnicas de la Inspección
+              </label>
+              <textarea class="form-control" id="observaciones" name="observaciones" rows="2" 
+                        placeholder="Comentarios adicionales sobre el estado estético, borrado de datos o entrega formal..."></textarea>
+            </div>
+          </div>
+
+          <!-- Section 4 -->
+          <div class="section-step-title mt-4">
+            <span class="step-num-badge">04</span>
+            <span>Firma Digital de Conformidad (Opcional en pantalla)</span>
+          </div>
+
+          <p class="text-muted small mb-3">
+            El colaborador que entrega puede firmar en pantalla para asentar de forma inmediata su conformidad con el dictamen de entrega y no adeudo. Si prefiere firma autógrafa física, deje el espacio en blanco y el PDF saldrá listo para impresión.
+          </p>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="chip-pill chip-folio">
+                <i class="bi bi-brush me-1 text-muted"></i> Panel de Firma de Entrega
+              </span>
+              <button type="button" class="btn btn-outline-sand btn-sm" id="clearSignatureBtn" style="font-size: 0.8rem;">
+                <i class="bi bi-eraser me-1 text-danger"></i> Borrar Firma
+              </button>
+            </div>
+
+            <div class="signature-wrapper">
+              <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+              <div class="signature-guide-line"></div>
+              <div class="signature-guide-text">
+                <i class="bi bi-pen me-1"></i> Firma del colaborador que entrega el equipo
+              </div>
+            </div>
+
+            <input type="hidden" name="signature_data" id="signature_data">
+          </div>
+
+          <!-- Alert Note -->
+          <div class="alert-club-info d-flex align-items-start gap-2.5 mb-4">
+            <i class="bi bi-award-fill fs-5 mt-0.5" style="color: var(--gold);"></i>
+            <div>
+              <strong>Efecto Legal y Administrativo:</strong> Al emitir este documento bajo el código oficial <code>AP-RH-FO-002</code>, se genera la constancia de liberación para el expediente del colaborador, notificando al Departamento de Recursos Humanos la procedencia del trámite de finiquito.
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex justify-content-end gap-3 pt-2">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-sand px-4">
+              Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary-club px-4 d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle fs-5"></i>
+              <span>Generar Acta de Entrega y No Adeudo</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/signature.js') }}"></script>
+<script>
+  // Auto-fill equipment and employee fields when selecting a policy folio
+  const folioSelect = document.getElementById('folio_select');
+  const folioHidden = document.getElementById('folio_politica');
+  const nombreInput = document.getElementById('nombre_empleado');
+  const equipoInput = document.getElementById('equipo_asignado');
+  const marcaInput = document.getElementById('marca');
+  const modeloInput = document.getElementById('modelo');
+
+  if (folioSelect) {
+    // If already preselected on load
+    if (folioSelect.value) {
+      folioHidden.value = folioSelect.value;
+    }
+
+    folioSelect.addEventListener('change', () => {
+      const selectedOption = folioSelect.options[folioSelect.selectedIndex];
+      if (selectedOption && selectedOption.value) {
+        folioHidden.value = selectedOption.value;
+        if (selectedOption.dataset.nombre) nombreInput.value = selectedOption.dataset.nombre;
+        if (selectedOption.dataset.equipo) equipoInput.value = selectedOption.dataset.equipo;
+        if (selectedOption.dataset.marca) marcaInput.value = selectedOption.dataset.marca;
+        if (selectedOption.dataset.modelo) modeloInput.value = selectedOption.dataset.modelo;
+      }
+    });
+  }
+
+  // Highlight color of dictamen
+  const dictamenSelect = document.getElementById('dictamen_no_adeudo');
+  if (dictamenSelect) {
+    dictamenSelect.addEventListener('change', () => {
+      if (dictamenSelect.value.includes('LIBERADO')) {
+        dictamenSelect.style.color = 'var(--primary)';
+      } else {
+        dictamenSelect.style.color = 'var(--alert-hazard)';
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -11,10 +11,14 @@
     </h2>
     <p class="text-muted small mb-0">Control integral de expedientes, cartas responsivas y activos asignados en Paraíso Country Club</p>
   </div>
-  <div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('nueva_devolucion') }}" class="btn btn-secondary-club d-inline-flex align-items-center gap-2">
+      <i class="bi bi-box-arrow-in-down-left"></i>
+      <span>Registrar Devolución</span>
+    </a>
     <a href="{{ url_for('nueva_politica') }}" class="btn btn-primary-club d-inline-flex align-items-center gap-2">
       <i class="bi bi-file-earmark-plus-fill"></i>
-      <span>Nueva Política</span>
+      <span>Asignar Equipo</span>
     </a>
   </div>
 </div>
@@ -23,16 +27,16 @@
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
     <div class="stat-card-club border-stat-primary">
-      <div class="label-eyebrow">Total Registros</div>
+      <div class="label-eyebrow">Equipos Asignados</div>
       <div class="stat-value text-dark">{{ total_count }}</div>
-      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Expedientes en sistema</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Expedientes registrados</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
     <div class="stat-card-club border-stat-lime">
-      <div class="label-eyebrow" style="color: var(--secondary);">Firma Digital</div>
-      <div class="stat-value" style="color: var(--primary);">{{ signed_count }}</div>
-      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Registrados y firmados</div>
+      <div class="label-eyebrow" style="color: var(--secondary);">No Adeudo / Devueltos</div>
+      <div class="stat-value" style="color: var(--primary);">{{ liberados_count }}</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Finiquito de resguardo liberado</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
@@ -56,7 +60,7 @@
   <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3" style="border-color: var(--sand-border) !important;">
     <div>
       <h4 class="display-font mb-0" style="font-size: 1.25rem; color: var(--primary-dark);">
-        Expedientes Registrados
+        Expedientes de Asignación y Resguardo
       </h4>
       <span class="label-eyebrow" style="font-size: 10px; color: var(--ink-secondary);">Archivo Oficial de Activos</span>
     </div>
@@ -79,8 +83,8 @@
             <th>Equipo Asignado</th>
             <th>Marca &bull; Modelo</th>
             <th>Fecha Entrega</th>
-            <th>Estado Físico</th>
-            <th>Estado Firma</th>
+            <th>Estatus Resguardo</th>
+            <th>Firma</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -106,29 +110,44 @@
                 <span class="small text-muted">{{ item['fecha_entrega'] }}</span>
               </td>
               <td>
-                <span class="chip-pill" style="background-color: var(--surface-container); color: var(--ink-primary); border: 1px solid var(--sand-border); font-size: 11px;">
-                  {{ item['estado_fisico'] }}
-                </span>
-              </td>
-              <td>
-                {% if 'Digitalmente' in item['estado_firma'] %}
-                  <span class="chip-pill chip-signed">
+                {% if item['folio_entrega'] %}
+                  <span class="chip-pill chip-signed" title="Equipo devuelto bajo acta {{ item['folio_entrega'] }}">
                     <span class="dot"></span>
-                    <span>Firmado Digital</span>
+                    <span>Devuelto ({{ item['folio_entrega'] }})</span>
                   </span>
                 {% else %}
-                  <span class="chip-pill chip-pending">
+                  <span class="chip-pill" style="background-color: var(--surface-container); color: var(--primary); border: 1px solid var(--sand-border); font-size: 11px;" title="Equipo actualmente en posesión del colaborador">
+                    <i class="bi bi-person-check me-1"></i>En Resguardo
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                {% if 'Digitalmente' in item['estado_firma'] or 'Digital' in item['estado_firma'] %}
+                  <span class="chip-pill chip-signed" style="font-size: 10.5px; padding: 2px 8px;">
                     <span class="dot"></span>
-                    <span>Firma Física</span>
+                    <span>Digital</span>
+                  </span>
+                {% else %}
+                  <span class="chip-pill chip-pending" style="font-size: 10.5px; padding: 2px 8px;">
+                    Física
                   </span>
                 {% endif %}
               </td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm">
-                  <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-secondary-club py-1 px-2.5" title="Descargar PDF Oficial" target="_blank" style="font-size: 0.82rem;">
-                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                  <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-secondary-club py-1 px-2" title="Descargar Política de Asignación en PDF" target="_blank" style="font-size: 0.8rem;">
+                    <i class="bi bi-file-earmark-pdf me-0.5"></i> PDF
                   </a>
-                  <button type="button" class="btn btn-outline-sand py-1 px-2.5 view-details-btn" 
+                  {% if item['folio_entrega'] %}
+                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-lime-club py-1 px-2" title="Descargar Carta de No Adeudo en PDF" target="_blank" style="font-size: 0.8rem;">
+                    <i class="bi bi-shield-check me-0.5"></i> No Adeudo
+                  </a>
+                  {% else %}
+                  <a href="{{ url_for('nueva_devolucion', folio_politica=item['folio']) }}" class="btn btn-outline-sand py-1 px-2" title="Registrar Devolución y generar Carta de No Adeudo" style="font-size: 0.8rem;">
+                    <i class="bi bi-box-arrow-in-down-left me-0.5"></i> Devolver
+                  </a>
+                  {% endif %}
+                  <button type="button" class="btn btn-outline-sand py-1 px-2 view-details-btn" 
                           data-folio="{{ item['folio'] }}"
                           data-empleado="{{ item['nombre_empleado'] }}"
                           data-equipo="{{ item['equipo_asignado'] }}"
@@ -140,7 +159,7 @@
                           data-creacion="{{ item['fecha_creacion'] }}"
                           data-firma="{{ item['estado_firma'] }}"
                           title="Ver Ficha Técnica"
-                          style="font-size: 0.82rem;">
+                          style="font-size: 0.8rem;">
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>

@@ -44,7 +44,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link-custom {{ 'active' if request.endpoint == 'nueva_politica' else '' }}" href="{{ url_for('nueva_politica') }}">
-              <i class="bi bi-file-earmark-plus me-1.5"></i> Nueva Política
+              <i class="bi bi-file-earmark-plus me-1.5"></i> Asignar Equipo
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link-custom {{ 'active' if request.endpoint in ['devoluciones', 'nueva_devolucion'] else '' }}" href="{{ url_for('devoluciones') }}">
+              <i class="bi bi-shield-check me-1.5"></i> No Adeudo / Devoluciones
             </a>
           </li>
         </ul>

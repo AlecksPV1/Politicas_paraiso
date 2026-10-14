@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Actas de Entrega y Cartas de No Adeudo — Paraíso Country Club{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="display-font mb-1 text-dark" style="font-size: 1.85rem;">
+      Actas de Entrega y Cartas de No Adeudo
+    </h2>
+    <p class="text-muted small mb-0">Control de devolución de activos, finiquitos de resguardo y constancias de no adeudo de TI</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('nueva_devolucion') }}" class="btn btn-primary-club d-inline-flex align-items-center gap-2">
+      <i class="bi bi-box-arrow-in-down-left"></i>
+      <span>Nueva Devolución</span>
+    </a>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card-club border-stat-primary">
+      <div class="label-eyebrow">Total Devoluciones</div>
+      <div class="stat-value text-dark">{{ total_entregas }}</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Actas procesadas</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card-club border-stat-lime">
+      <div class="label-eyebrow" style="color: var(--secondary);">No Adeudo Liberado</div>
+      <div class="stat-value" style="color: var(--primary);">{{ liberados_count }}</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Finiquito autorizado sin cargos</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card-club border-stat-gold">
+      <div class="label-eyebrow" style="color: var(--gold);">Con Observaciones</div>
+      <div class="stat-value" style="color: var(--gold);">{{ retenciones_count }}</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Con retención o faltantes</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card-club border-stat-sand">
+      <div class="label-eyebrow">Último Folio Devolución</div>
+      <div class="stat-value font-monospace" style="font-size: 1.55rem; color: var(--primary-dark);">{{ last_folio or 'Ninguno' }}</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Secuencia DEV</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Table Card -->
+<div class="card card-custom">
+  <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3" style="border-color: var(--sand-border) !important;">
+    <div>
+      <h4 class="display-font mb-0" style="font-size: 1.25rem; color: var(--primary-dark);">
+        Expedientes de Devolución y Deslinde
+      </h4>
+      <span class="label-eyebrow" style="font-size: 10px; color: var(--ink-secondary);">Constancias Oficiales Emitidas</span>
+    </div>
+    
+    <div class="input-group" style="max-width: 320px;">
+      <span class="input-group-text bg-white" style="border-color: var(--sand-border); border-right: none;">
+        <i class="bi bi-search text-muted"></i>
+      </span>
+      <input type="text" id="searchDevInput" class="form-control" style="border-left: none; border-color: var(--sand-border);" placeholder="Buscar por folio, colaborador...">
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive table-responsive-club">
+      <table class="table table-custom" id="entregasTable">
+        <thead>
+          <tr>
+            <th>Folio Devolución</th>
+            <th>Folio Origen</th>
+            <th>Colaborador</th>
+            <th>Equipo Devuelto</th>
+            <th>Fecha Devolución</th>
+            <th>Motivo</th>
+            <th>Dictamen No Adeudo</th>
+            <th>Firma</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if entregas %}
+            {% for item in entregas %}
+            <tr>
+              <td>
+                <span class="chip-pill chip-folio" style="color: var(--primary); font-weight: 700;">{{ item['folio_entrega'] }}</span>
+              </td>
+              <td>
+                <span class="chip-pill" style="background-color: var(--surface-container); border: 1px solid var(--sand-border); font-size: 11px;">
+                  <i class="bi bi-link-45deg me-0.5"></i>{{ item['folio_politica'] }}
+                </span>
+              </td>
+              <td>
+                <strong style="color: var(--ink-primary);">{{ item['nombre_empleado'] }}</strong>
+              </td>
+              <td>
+                <span style="color: var(--ink-secondary);">
+                  <i class="bi bi-laptop me-1 text-muted"></i>{{ item['equipo_asignado'] }}
+                </span>
+              </td>
+              <td>
+                <span class="small text-muted">{{ item['fecha_devolucion'] }}</span>
+              </td>
+              <td>
+                <span class="small" style="color: var(--ink-secondary);">{{ item['motivo_entrega'] }}</span>
+              </td>
+              <td>
+                {% if 'LIBERADO' in item['dictamen_no_adeudo'].upper() %}
+                  <span class="chip-pill chip-signed">
+                    <span class="dot"></span>
+                    <span>No Adeudo (Liberado)</span>
+                  </span>
+                {% else %}
+                  <span class="chip-pill" style="background-color: #FDEDED; color: #B94A48; border: 1px solid #F5C6CB;">
+                    <span class="dot" style="background-color: #B94A48;"></span>
+                    <span>Con Retención</span>
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                {% if 'Digitalmente' in item['estado_firma'] %}
+                  <span class="chip-pill chip-signed" style="font-size: 10.5px; padding: 2px 8px;">
+                    <i class="bi bi-pen me-1"></i>Digital
+                  </span>
+                {% else %}
+                  <span class="chip-pill chip-pending" style="font-size: 10.5px; padding: 2px 8px;">
+                    Física
+                  </span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-secondary-club py-1 px-2.5" title="Descargar Acta de No Adeudo en PDF" target="_blank" style="font-size: 0.82rem;">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                  </a>
+                  <button type="button" class="btn btn-outline-sand py-1 px-2.5 view-dev-btn"
+                          data-folio="{{ item['folio_entrega'] }}"
+                          data-origen="{{ item['folio_politica'] }}"
+                          data-empleado="{{ item['nombre_empleado'] }}"
+                          data-puesto="{{ item['puesto_departamento'] }}"
+                          data-equipo="{{ item['equipo_asignado'] }}"
+                          data-marca="{{ item['marca'] }} / {{ item['modelo'] }}"
+                          data-motivo="{{ item['motivo_entrega'] }}"
+                          data-fecha="{{ item['fecha_devolucion'] }}"
+                          data-estado="{{ item['estado_fisico_entrega'] }}"
+                          data-operatividad="{{ item['operatividad'] }}"
+                          data-dictamen="{{ item['dictamen_no_adeudo'] }}"
+                          data-retencion="{{ item['monto_retencion'] }}"
+                          data-accesorios="{{ item['accesorios_devueltos'] }}"
+                          data-faltantes="{{ item['accesorios_faltantes'] }}"
+                          data-responsable="{{ item['responsable_sistemas'] }}"
+                          data-observaciones="{{ item['observaciones'] }}"
+                          title="Ver Ficha de No Adeudo"
+                          style="font-size: 0.82rem;">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="9" class="text-center py-5 text-muted">
+                <div class="py-4">
+                  <i class="bi bi-box-seam fs-1 d-block mb-2" style="color: var(--sand-border);"></i>
+                  <p class="mb-2 fw-semibold" style="color: var(--ink-secondary);">Aún no hay actas de entrega o cartas de no adeudo generadas.</p>
+                  <a href="{{ url_for('nueva_devolucion') }}" class="btn btn-primary-club btn-sm mt-1">
+                    <i class="bi bi-box-arrow-in-down-left me-1"></i> Registrar primera entrega de equipo
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Devolución Sheet -->
+<div class="modal fade" id="devModal" tabindex="-1" aria-labelledby="devModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-content-club">
+      <div class="modal-header modal-header-club">
+        <div>
+          <h5 class="modal-title display-font mb-0 text-white" id="devModalLabel" style="font-size: 1.25rem;">
+            Acta de Entrega y No Adeudo
+          </h5>
+          <span class="chip-pill chip-folio mt-1" id="mDevFolio" style="background-color: rgba(255, 255, 255, 0.15); color: #ffffff; border-color: rgba(255, 255, 255, 0.3);"></span>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-4" style="background-color: var(--surface-cream);">
+        <div class="card p-3 mb-3 bg-white border" style="border-color: var(--sand-light) !important; border-radius: var(--radius-md);">
+          <div class="row g-2 small">
+            <div class="col-4 label-eyebrow">Colaborador:</div>
+            <div class="col-8 fw-bold" id="mDevEmpleado" style="color: var(--ink-primary);"></div>
+
+            <div class="col-4 label-eyebrow">Puesto / Área:</div>
+            <div class="col-8" id="mDevPuesto"></div>
+
+            <div class="col-4 label-eyebrow">Folio Asignación Origen:</div>
+            <div class="col-8 fw-bold" id="mDevOrigen" style="color: var(--primary);"></div>
+
+            <div class="col-4 label-eyebrow">Equipo Devuelto:</div>
+            <div class="col-8" id="mDevEquipo"></div>
+
+            <div class="col-4 label-eyebrow">Marca / Modelo:</div>
+            <div class="col-8" id="mDevMarca"></div>
+
+            <div class="col-4 label-eyebrow">Motivo de Entrega:</div>
+            <div class="col-8" id="mDevMotivo"></div>
+
+            <div class="col-4 label-eyebrow">Fecha de Devolución:</div>
+            <div class="col-8" id="mDevFecha"></div>
+
+            <div class="col-4 label-eyebrow">Estado Físico Entrega:</div>
+            <div class="col-8" id="mDevEstado"></div>
+
+            <div class="col-4 label-eyebrow">Operatividad Técnica:</div>
+            <div class="col-8" id="mDevOperatividad"></div>
+
+            <div class="col-4 label-eyebrow">Dictamen de No Adeudo:</div>
+            <div class="col-8 fw-bold" id="mDevDictamen"></div>
+
+            <div class="col-4 label-eyebrow">Monto Retención:</div>
+            <div class="col-8 fw-bold" id="mDevRetencion"></div>
+
+            <div class="col-4 label-eyebrow">Accesorios Devueltos:</div>
+            <div class="col-8" id="mDevAccesorios"></div>
+
+            <div class="col-4 label-eyebrow">Accesorios Faltantes:</div>
+            <div class="col-8" id="mDevFaltantes"></div>
+
+            <div class="col-4 label-eyebrow">Responsable TI:</div>
+            <div class="col-8" id="mDevResponsable"></div>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="label-eyebrow d-block mb-1">Observaciones Técnicas del Dictamen:</label>
+          <div class="p-3 bg-white rounded border text-muted small" id="mDevObservaciones" style="border-color: var(--sand-border) !important; white-space: pre-wrap; min-height: 50px;"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="background-color: #ffffff; border-top: 1px solid var(--sand-light);">
+        <button type="button" class="btn btn-outline-sand btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        <a id="mDevDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank">
+          <i class="bi bi-file-earmark-pdf"></i>
+          <span>Descargar PDF Oficial</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Live filter for the table
+  const searchInput = document.getElementById('searchDevInput');
+  const table = document.getElementById('entregasTable');
+  
+  if (searchInput && table) {
+    searchInput.addEventListener('keyup', () => {
+      const filter = searchInput.value.toLowerCase();
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].textContent.toLowerCase();
+        if (rowText.includes(filter)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    });
+  }
+
+  // Modal handler
+  const devModalEl = document.getElementById('devModal');
+  const devModal = new bootstrap.Modal(devModalEl);
+
+  document.querySelectorAll('.view-dev-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const folio = btn.getAttribute('data-folio');
+      document.getElementById('mDevFolio').textContent = folio;
+      document.getElementById('mDevOrigen').textContent = btn.getAttribute('data-origen');
+      document.getElementById('mDevEmpleado').textContent = btn.getAttribute('data-empleado');
+      document.getElementById('mDevPuesto').textContent = btn.getAttribute('data-puesto') || 'General';
+      document.getElementById('mDevEquipo').textContent = btn.getAttribute('data-equipo');
+      document.getElementById('mDevMarca').textContent = btn.getAttribute('data-marca');
+      document.getElementById('mDevMotivo').textContent = btn.getAttribute('data-motivo');
+      document.getElementById('mDevFecha').textContent = btn.getAttribute('data-fecha');
+      document.getElementById('mDevEstado').textContent = btn.getAttribute('data-estado');
+      document.getElementById('mDevOperatividad').textContent = btn.getAttribute('data-operatividad');
+      document.getElementById('mDevDictamen').textContent = btn.getAttribute('data-dictamen');
+      document.getElementById('mDevRetencion').textContent = btn.getAttribute('data-retencion');
+      document.getElementById('mDevAccesorios').textContent = btn.getAttribute('data-accesorios');
+      document.getElementById('mDevFaltantes').textContent = btn.getAttribute('data-faltantes');
+      document.getElementById('mDevResponsable').textContent = btn.getAttribute('data-responsable');
+      document.getElementById('mDevObservaciones').textContent = btn.getAttribute('data-observaciones') || 'Sin observaciones.';
+      
+      const downloadBtn = document.getElementById('mDevDownloadBtn');
+      downloadBtn.href = '/descargar-devolucion/' + folio;
+
+      devModal.show();
+    });
+  });
+</script>
+{% endblock %}
