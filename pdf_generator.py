@@ -231,7 +231,7 @@ def generate_policy_pdf(data, signature_path=None):
             Paragraph("Notas / Accesorios:", table_label_style),
             Paragraph(data.get('notas') if data.get('notas') else "Sin observaciones adicionales", table_value_style),
             Paragraph("Estado de Firma:", table_label_style),
-            Paragraph("<font color='#1B4D3E'><b>Registrada Digitalmente</b></font>" if signature_path else "<font color='#B3924C'><b>Pendiente</b></font>", table_value_style)
+            Paragraph("<font color='#1B4D3E'><b>Registrada Digitalmente</b></font>" if signature_path else "<font color='#B3924C'><b>Firma Física</b></font>", table_value_style)
         ]
     ]
 

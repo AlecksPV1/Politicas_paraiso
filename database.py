@@ -44,7 +44,7 @@ def save_politica(data, pdf_filename, signature_filename=None):
     conn = get_db_connection()
     cursor = conn.cursor()
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    estado_firma = "Firmado Digitalmente" if signature_filename else "Pendiente de Firma"
+    estado_firma = "Firmado Digitalmente" if signature_filename else "Firma Física"
     
     cursor.execute('''
         INSERT INTO politicas (
