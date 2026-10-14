@@ -234,3 +234,19 @@ def get_politicas_with_dev_status():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def get_politicas_disponibles_para_devolucion():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT * FROM politicas 
+        WHERE folio NOT IN (
+            SELECT folio_politica FROM entregas 
+            WHERE folio_politica IS NOT NULL AND folio_politica != ''
+        )
+        ORDER BY id DESC
+    ''')
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+

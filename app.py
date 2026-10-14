@@ -27,7 +27,8 @@ from database import (
     get_all_entregas,
     get_entrega_by_folio,
     get_entrega_by_folio_politica,
-    get_politicas_with_dev_status
+    get_politicas_with_dev_status,
+    get_politicas_disponibles_para_devolucion
 )
 from pdf_generator import generate_policy_pdf, generate_entrega_pdf
 
@@ -223,6 +224,12 @@ def nueva_devolucion(folio_politica=None):
             flash('Por favor completa todos los campos requeridos (*).', 'error')
             return redirect(url_for('nueva_devolucion', folio_politica=folio_politica))
 
+        # Check if this folio_politica already has an entrega
+        entrega_existente = get_entrega_by_folio_politica(folio_politica)
+        if entrega_existente:
+            flash(f'El folio de asignación {folio_politica} ya cuenta con un acta de devolución ({entrega_existente["folio_entrega"]}).', 'error')
+            return redirect(url_for('devoluciones'))
+
         folio_entrega = get_next_folio_entrega()
 
         signature_path = None
@@ -272,13 +279,20 @@ def nueva_devolucion(folio_politica=None):
         return redirect(url_for('devoluciones'))
 
     # GET Request
+    target_folio = folio_politica or request.args.get('folio_politica')
+    politica_seleccionada = None
+    if target_folio:
+        entrega_existente = get_entrega_by_folio_politica(target_folio)
+        if entrega_existente:
+            flash(f'El folio de asignación {target_folio} ya cuenta con un acta de devolución ({entrega_existente["folio_entrega"]}).', 'warning')
+            return redirect(url_for('devoluciones'))
+        politica_seleccionada = get_politica_by_folio(target_folio)
+        if not politica_seleccionada:
+            flash(f'No se encontró la política con folio {target_folio}.', 'error')
+
     next_folio_entrega = get_next_folio_entrega()
     today_date = datetime.date.today().strftime('%Y-%m-%d')
-    politicas_disponibles = get_all_politicas()
-
-    politica_seleccionada = None
-    if folio_politica:
-        politica_seleccionada = get_politica_by_folio(folio_politica)
+    politicas_disponibles = get_politicas_disponibles_para_devolucion()
 
     return render_template(
         'entrega_form.html',

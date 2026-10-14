@@ -32,13 +32,24 @@
             <span>Vinculación con Folio de Asignación y Datos del Colaborador</span>
           </div>
 
+          {% if not politicas and not politica_seleccionada %}
+          <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: var(--radius-md);">
+            <i class="bi bi-info-circle-fill fs-5 text-warning"></i>
+            <div>
+              <strong>No hay equipos pendientes de devolución:</strong> Todos los colaboradores y equipos asignados ya cuentan con su respectiva acta de devolución y deslinde registrada en el sistema.
+            </div>
+          </div>
+          {% endif %}
+
           <div class="row g-3 mb-4">
             <div class="col-md-6">
               <label for="folio_select" class="form-label-club">
                 Seleccionar Folio de Asignación Original <span class="text-danger">*</span>
               </label>
               <select class="form-select" id="folio_select" required>
-                <option value="" disabled {% if not politica_seleccionada %}selected{% endif %}>Seleccione un expediente de resguardo...</option>
+                <option value="" disabled {% if not politica_seleccionada %}selected{% endif %}>
+                  {% if politicas %}Seleccione un expediente de resguardo...{% else %}Sin expedientes pendientes de devolución{% endif %}
+                </option>
                 {% for pol in politicas %}
                   <option value="{{ pol['folio'] }}"
                           data-nombre="{{ pol['nombre_empleado'] }}"
@@ -51,7 +62,7 @@
                 {% endfor %}
               </select>
               <input type="hidden" name="folio_politica" id="folio_politica" value="{{ politica_seleccionada['folio'] if politica_seleccionada else '' }}">
-              <div class="form-text-club">Vincula esta entrega con el contrato/política original de resguardo.</div>
+              <div class="form-text-club">Vincula esta entrega con el contrato/política original de resguardo (solo equipos en resguardo activo).</div>
             </div>
 
             <div class="col-md-6">
@@ -281,22 +292,25 @@
   const marcaInput = document.getElementById('marca');
   const modeloInput = document.getElementById('modelo');
 
-  if (folioSelect) {
-    // If already preselected on load
-    if (folioSelect.value) {
-      folioHidden.value = folioSelect.value;
+  function syncSelectedPolicy() {
+    if (!folioSelect) return;
+    const selectedOption = folioSelect.options[folioSelect.selectedIndex];
+    if (selectedOption && selectedOption.value) {
+      folioHidden.value = selectedOption.value;
+      if (selectedOption.dataset.nombre) nombreInput.value = selectedOption.dataset.nombre;
+      if (selectedOption.dataset.equipo) equipoInput.value = selectedOption.dataset.equipo;
+      if (selectedOption.dataset.marca) marcaInput.value = selectedOption.dataset.marca;
+      if (selectedOption.dataset.modelo) modeloInput.value = selectedOption.dataset.modelo;
     }
+  }
 
-    folioSelect.addEventListener('change', () => {
-      const selectedOption = folioSelect.options[folioSelect.selectedIndex];
-      if (selectedOption && selectedOption.value) {
-        folioHidden.value = selectedOption.value;
-        if (selectedOption.dataset.nombre) nombreInput.value = selectedOption.dataset.nombre;
-        if (selectedOption.dataset.equipo) equipoInput.value = selectedOption.dataset.equipo;
-        if (selectedOption.dataset.marca) marcaInput.value = selectedOption.dataset.marca;
-        if (selectedOption.dataset.modelo) modeloInput.value = selectedOption.dataset.modelo;
-      }
-    });
+  if (folioSelect) {
+    folioSelect.addEventListener('change', syncSelectedPolicy);
+
+    // Sync immediately on DOM ready if an option is preselected
+    if (folioSelect.value) {
+      syncSelectedPolicy();
+    }
   }
 
   // Highlight color of dictamen
