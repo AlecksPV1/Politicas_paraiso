@@ -269,7 +269,7 @@ def nueva_devolucion(folio_politica=None):
         save_entrega(data, pdf_filename, signature_filename)
 
         flash(f'¡Acta de Entrega y Carta de No Adeudo {folio_entrega} generada con éxito para {nombre_empleado}!', 'success')
-        return redirect(url_for('devoluciones', recien_creado=folio_entrega))
+        return redirect(url_for('devoluciones'))
 
     # GET Request
     next_folio_entrega = get_next_folio_entrega()
@@ -316,11 +316,14 @@ def descargar_pdf(folio):
         abort(404, description="Documento no encontrado")
 
     pdf_filename = record['pdf_path']
+    force_download = request.args.get('download') == '1'
+
     return send_from_directory(
         config.PDF_STORAGE_DIR,
         pdf_filename,
-        as_attachment=True,
-        download_name=f"Politica_{folio}.pdf"
+        as_attachment=force_download,
+        download_name=f"Politica_{folio}.pdf",
+        mimetype='application/pdf'
     )
 
 

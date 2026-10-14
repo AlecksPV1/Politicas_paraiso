@@ -135,11 +135,11 @@
               </td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm">
-                  <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-secondary-club py-1 px-2" title="Descargar Política de Asignación en PDF" target="_blank" style="font-size: 0.8rem;">
-                    <i class="bi bi-file-earmark-pdf me-0.5"></i> PDF
+                  <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-secondary-club py-1 px-2" title="Abrir e Imprimir Política de Asignación en PDF" target="_blank" style="font-size: 0.8rem;">
+                    <i class="bi bi-file-earmark-text me-0.5"></i> Asignación
                   </a>
                   {% if item['folio_entrega'] %}
-                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-lime-club py-1 px-2" title="Descargar Carta de No Adeudo en PDF" target="_blank" style="font-size: 0.8rem;">
+                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-primary-club py-1 px-2" title="Abrir e Imprimir Carta de No Adeudo en PDF" target="_blank" style="font-size: 0.8rem;">
                     <i class="bi bi-shield-check me-0.5"></i> No Adeudo
                   </a>
                   {% else %}
@@ -158,6 +158,7 @@
                           data-notas="{{ item['notas'] }}"
                           data-creacion="{{ item['fecha_creacion'] }}"
                           data-firma="{{ item['estado_firma'] }}"
+                          data-dev="{{ item['folio_entrega'] or '' }}"
                           title="Ver Ficha Técnica"
                           style="font-size: 0.8rem;">
                     <i class="bi bi-eye"></i>
@@ -233,9 +234,13 @@
 
       <div class="modal-footer" style="background-color: #ffffff; border-top: 1px solid var(--sand-light);">
         <button type="button" class="btn btn-outline-sand btn-sm" data-bs-dismiss="modal">Cerrar</button>
-        <a id="modalDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank">
-          <i class="bi bi-file-earmark-pdf"></i>
-          <span>Descargar PDF Oficial</span>
+        <a id="modalDownloadBtn" href="#" class="btn btn-secondary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank" title="Abrir e Imprimir Política de Asignación">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>PDF Asignación</span>
+        </a>
+        <a id="modalDevDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank" style="display: none;" title="Abrir e Imprimir Carta de No Adeudo">
+          <i class="bi bi-shield-check"></i>
+          <span>PDF No Adeudo</span>
         </a>
       </div>
     </div>
@@ -284,6 +289,15 @@
       
       const downloadBtn = document.getElementById('modalDownloadBtn');
       downloadBtn.href = '/descargar/' + folio;
+
+      const devFolio = btn.getAttribute('data-dev');
+      const devBtn = document.getElementById('modalDevDownloadBtn');
+      if (devFolio) {
+        devBtn.href = '/descargar-devolucion/' + devFolio;
+        devBtn.style.display = 'inline-flex';
+      } else {
+        devBtn.style.display = 'none';
+      }
 
       detailsModal.show();
     });
