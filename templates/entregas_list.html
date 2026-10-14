@@ -19,6 +19,37 @@
   </div>
 </div>
 
+{% if request.args.get('recien_creado') %}
+<!-- Immediate Print / Action Banner -->
+<div class="card p-4 mb-4 border-2 shadow-sm" style="background-color: var(--surface-white); border-color: var(--secondary) !important; border-radius: var(--radius-md);">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="p-3 rounded-circle d-inline-flex" style="background-color: var(--secondary-container); color: var(--primary);">
+        <i class="bi bi-printer-fill fs-2"></i>
+      </div>
+      <div>
+        <h4 class="mb-1 text-dark display-font" style="font-size: 1.35rem;">
+          ¡Acta de No Adeudo <strong>{{ request.args.get('recien_creado') }}</strong> Lista para Imprimir!
+        </h4>
+        <p class="mb-0 text-muted small">
+          El documento oficial ha sido generado y firmado. Puedes abrirlo para imprimirlo de inmediato y anexarlo al expediente físico del colaborador para Recursos Humanos.
+        </p>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=request.args.get('recien_creado')) }}" class="btn btn-primary-club d-inline-flex align-items-center gap-2 py-2 px-3 fw-bold" target="_blank">
+        <i class="bi bi-printer-fill"></i>
+        <span>Abrir e Imprimir PDF</span>
+      </a>
+      <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=request.args.get('recien_creado'), download=1) }}" class="btn btn-secondary-club d-inline-flex align-items-center gap-2 py-2 px-3">
+        <i class="bi bi-download"></i>
+        <span>Descargar Archivo</span>
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- Stats Row -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
@@ -137,8 +168,8 @@
               </td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm">
-                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-secondary-club py-1 px-2.5" title="Descargar Acta de No Adeudo en PDF" target="_blank" style="font-size: 0.82rem;">
-                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-secondary-club py-1 px-2.5" title="Abrir e Imprimir Acta de No Adeudo en PDF" target="_blank" style="font-size: 0.82rem;">
+                    <i class="bi bi-printer me-1"></i> Imprimir PDF
                   </a>
                   <button type="button" class="btn btn-outline-sand py-1 px-2.5 view-dev-btn"
                           data-folio="{{ item['folio_entrega'] }}"
@@ -253,9 +284,9 @@
 
       <div class="modal-footer" style="background-color: #ffffff; border-top: 1px solid var(--sand-light);">
         <button type="button" class="btn btn-outline-sand btn-sm" data-bs-dismiss="modal">Cerrar</button>
-        <a id="mDevDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank">
-          <i class="bi bi-file-earmark-pdf"></i>
-          <span>Descargar PDF Oficial</span>
+        <a id="mDevDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1.5" target="_blank">
+          <i class="bi bi-printer-fill"></i>
+          <span>Abrir e Imprimir PDF Oficial</span>
         </a>
       </div>
     </div>
