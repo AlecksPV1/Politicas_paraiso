@@ -302,7 +302,7 @@ def generate_policy_pdf(data, signature_path=None):
     else:
         sig_box_employee = sig_img_flowable
 
-    sig_box_company = Paragraph("<br/><font size=7 color='#6c757d'>Sello y Validación de Soporte TI</font><br/><br/>", subtitle_style)
+    sig_box_company = Paragraph("<br/><br/><br/>", body_style)
 
     signatures_matrix = [
         [
