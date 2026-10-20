@@ -27,16 +27,16 @@
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
     <div class="stat-card-club border-stat-primary">
-      <div class="label-eyebrow">Equipos Asignados</div>
+      <div class="label-eyebrow">Políticas Registradas</div>
       <div class="stat-value text-dark">{{ total_count }}</div>
-      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Expedientes registrados</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Expedientes en sistema</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
     <div class="stat-card-club border-stat-lime">
-      <div class="label-eyebrow" style="color: var(--secondary);">No Adeudo / Devueltos</div>
+      <div class="label-eyebrow" style="color: var(--secondary);">No Adeudo Liberado</div>
       <div class="stat-value" style="color: var(--primary);">{{ liberados_count }}</div>
-      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Finiquito de resguardo liberado</div>
+      <div class="text-muted small mt-1" style="font-size: 0.76rem;">Actas finiquitadas sin cargos</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
@@ -80,7 +80,7 @@
           <tr>
             <th>Folio</th>
             <th>Colaborador</th>
-            <th>Equipo Asignado</th>
+            <th>Equipos Asignados</th>
             <th>Marca &bull; Modelo</th>
             <th>Fecha Entrega</th>
             <th>Estatus Resguardo</th>
@@ -99,9 +99,20 @@
                 <strong style="color: var(--ink-primary);">{{ item['nombre_empleado'] }}</strong>
               </td>
               <td>
-                <span style="color: var(--ink-secondary);">
-                  <i class="bi bi-laptop me-1 text-muted"></i>{{ item['equipo_asignado'] }}
-                </span>
+                <div class="d-flex flex-column gap-1">
+                  {% if item['equipos'] and item['equipos']|length > 1 %}
+                    <span class="badge text-dark border align-self-start" style="background-color: var(--surface-container); font-size: 11px;">
+                      <i class="bi bi-boxes me-1 text-primary"></i>{{ item['equipos']|length }} Equipos Asignados
+                    </span>
+                    <span class="small text-muted text-truncate" style="max-width: 200px;" title="{{ item['equipo_asignado'] }}">
+                      {{ item['equipo_asignado'] }}
+                    </span>
+                  {% else %}
+                    <span style="color: var(--ink-secondary);">
+                      <i class="bi bi-laptop me-1 text-muted"></i>{{ item['equipo_asignado'] }}
+                    </span>
+                  {% endif %}
+                </div>
               </td>
               <td>
                 <span class="small" style="color: var(--ink-secondary);">{{ item['marca'] }} &bull; {{ item['modelo'] }}</span>
@@ -110,14 +121,18 @@
                 <span class="small text-muted">{{ item['fecha_entrega'] }}</span>
               </td>
               <td>
-                {% if item['folio_entrega'] %}
-                  <span class="chip-pill chip-signed" title="Equipo devuelto bajo acta {{ item['folio_entrega'] }}">
+                {% if item['estado_resguardo'] == 'Devuelto Total' %}
+                  <span class="chip-pill chip-signed" title="Todos los equipos devueltos formalmente">
                     <span class="dot"></span>
-                    <span>Devuelto ({{ item['folio_entrega'] }})</span>
+                    <span>Devuelto Total ({{ item['total_equipos'] }}/{{ item['total_equipos'] }})</span>
+                  </span>
+                {% elif item['estado_resguardo'] == 'Devolución Parcial' %}
+                  <span class="chip-pill" style="background-color: #FEF3D6; color: #8A6D3B; border: 1px solid #FAEBCC;" title="Devolución parcial: {{ item['pendientes_count'] }} equipo(s) pendiente(s)">
+                    <i class="bi bi-clock-history me-1 text-warning"></i>Parcial ({{ item['devueltos_count'] }}/{{ item['total_equipos'] }})
                   </span>
                 {% else %}
-                  <span class="chip-pill" style="background-color: var(--surface-container); color: var(--primary); border: 1px solid var(--sand-border); font-size: 11px;" title="Equipo actualmente en posesión del colaborador">
-                    <i class="bi bi-person-check me-1"></i>En Resguardo
+                  <span class="chip-pill" style="background-color: var(--surface-container); color: var(--primary); border: 1px solid var(--sand-border); font-size: 11px;" title="Equipos en resguardo activo">
+                    <i class="bi bi-person-check me-1"></i>En Resguardo ({{ item['total_equipos'] }})
                   </span>
                 {% endif %}
               </td>
@@ -138,27 +153,38 @@
                   <a href="{{ url_for('descargar_pdf', folio=item['folio']) }}" class="btn btn-secondary-club py-1 px-2" title="Abrir e Imprimir Política de Asignación en PDF" target="_blank" style="font-size: 0.8rem;">
                     <i class="bi bi-file-earmark-text me-0.5"></i> Asignación
                   </a>
-                  {% if item['folio_entrega'] %}
-                  <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['folio_entrega']) }}" class="btn btn-primary-club py-1 px-2" title="Abrir e Imprimir Carta de No Adeudo en PDF" target="_blank" style="font-size: 0.8rem;">
-                    <i class="bi bi-shield-check me-0.5"></i> No Adeudo
-                  </a>
-                  {% else %}
-                  <a href="{{ url_for('nueva_devolucion', folio_politica=item['folio']) }}" class="btn btn-outline-sand py-1 px-2" title="Registrar Devolución y generar Carta de No Adeudo" style="font-size: 0.8rem;">
-                    <i class="bi bi-box-arrow-in-down-left me-0.5"></i> Devolver
-                  </a>
+
+                  {% if item['pendientes_count'] > 0 %}
+                    <a href="{{ url_for('nueva_devolucion', folio_politica=item['folio']) }}" class="btn btn-outline-sand py-1 px-2" title="{{ 'Devolver Equipos Restantes' if item['devueltos_count'] > 0 else 'Registrar Devolución' }}" style="font-size: 0.8rem;">
+                      <i class="bi bi-box-arrow-in-down-left me-0.5"></i> {{ 'Devolver Restante' if item['devueltos_count'] > 0 else 'Devolver' }}
+                    </a>
                   {% endif %}
+
+                  {% if item['entregas'] %}
+                    {% if item['entregas']|length == 1 %}
+                      <a href="{{ url_for('descargar_devolucion_pdf', folio_entrega=item['entregas'][0]['folio_entrega']) }}" class="btn btn-primary-club py-1 px-2" title="Abrir e Imprimir Carta de No Adeudo {{ item['entregas'][0]['folio_entrega'] }}" target="_blank" style="font-size: 0.8rem;">
+                        <i class="bi bi-shield-check me-0.5"></i> No Adeudo
+                      </a>
+                    {% else %}
+                      <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-primary-club py-1 px-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.8rem;">
+                          <i class="bi bi-shield-check me-0.5"></i> No Adeudo ({{ item['entregas']|length }})
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 0.82rem;">
+                          {% for ent in item['entregas'] %}
+                            <li>
+                              <a class="dropdown-item py-1.5" href="{{ url_for('descargar_devolucion_pdf', folio_entrega=ent['folio_entrega']) }}" target="_blank">
+                                <i class="bi bi-file-earmark-pdf me-1 text-danger"></i> {{ ent['folio_entrega'] }} <span class="text-muted">({{ ent['fecha_devolucion'] }})</span>
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+
                   <button type="button" class="btn btn-outline-sand py-1 px-2 view-details-btn" 
                           data-folio="{{ item['folio'] }}"
-                          data-empleado="{{ item['nombre_empleado'] }}"
-                          data-equipo="{{ item['equipo_asignado'] }}"
-                          data-marca="{{ item['marca'] }}"
-                          data-modelo="{{ item['modelo'] }}"
-                          data-fecha="{{ item['fecha_entrega'] }}"
-                          data-estado="{{ item['estado_fisico'] }}"
-                          data-notas="{{ item['notas'] }}"
-                          data-creacion="{{ item['fecha_creacion'] }}"
-                          data-firma="{{ item['estado_firma'] }}"
-                          data-dev="{{ item['folio_entrega'] or '' }}"
                           title="Ver Ficha Técnica"
                           style="font-size: 0.8rem;">
                     <i class="bi bi-eye"></i>
@@ -188,12 +214,12 @@
 
 <!-- Modal: Detail Sheet (Tier 3 Elevation) -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content modal-content-club">
       <div class="modal-header modal-header-club">
         <div>
           <h5 class="modal-title display-font mb-0 text-white" id="detailsModalLabel" style="font-size: 1.25rem;">
-            Expediente Oficial
+            Expediente Oficial de Resguardo
           </h5>
           <span class="chip-pill chip-folio mt-1" id="modalFolio" style="background-color: rgba(255, 255, 255, 0.15); color: #ffffff; border-color: rgba(255, 255, 255, 0.3);"></span>
         </div>
@@ -203,32 +229,43 @@
       <div class="modal-body p-4" style="background-color: var(--surface-cream);">
         <div class="card p-3 mb-3 bg-white border" style="border-color: var(--sand-light) !important; border-radius: var(--radius-md);">
           <div class="row g-2 small">
-            <div class="col-5 label-eyebrow">Colaborador:</div>
-            <div class="col-7 fw-bold" id="modalEmpleado" style="color: var(--ink-primary);"></div>
+            <div class="col-4 label-eyebrow">Colaborador:</div>
+            <div class="col-8 fw-bold" id="modalEmpleado" style="color: var(--ink-primary);"></div>
 
-            <div class="col-5 label-eyebrow">Equipo Asignado:</div>
-            <div class="col-7" id="modalEquipo" style="color: var(--primary); font-weight: 600;"></div>
+            <div class="col-4 label-eyebrow">Fecha de Asignación:</div>
+            <div class="col-8" id="modalFecha"></div>
 
-            <div class="col-5 label-eyebrow">Marca &bull; Modelo:</div>
-            <div class="col-7" id="modalMarcaModelo"></div>
+            <div class="col-4 label-eyebrow">Modalidad Firma:</div>
+            <div class="col-8" id="modalFirma"></div>
 
-            <div class="col-5 label-eyebrow">Fecha de Entrega:</div>
-            <div class="col-7" id="modalFecha"></div>
-
-            <div class="col-5 label-eyebrow">Estado Físico:</div>
-            <div class="col-7" id="modalEstado"></div>
-
-            <div class="col-5 label-eyebrow">Estado Firma:</div>
-            <div class="col-7" id="modalFirma"></div>
-
-            <div class="col-5 label-eyebrow">Fecha Registro:</div>
-            <div class="col-7 text-muted" id="modalCreacion"></div>
+            <div class="col-4 label-eyebrow">Fecha de Registro:</div>
+            <div class="col-8 text-muted" id="modalCreacion"></div>
           </div>
         </div>
 
-        <div class="mb-2">
-          <label class="label-eyebrow d-block mb-1">Notas y Accesorios Asignados:</label>
-          <div class="p-3 bg-white rounded border text-muted small" id="modalNotas" style="border-color: var(--sand-border) !important; white-space: pre-wrap; min-height: 55px;"></div>
+        <div class="mb-3">
+          <label class="label-eyebrow d-block mb-1">Equipos Consignados en esta Política:</label>
+          <div class="table-responsive bg-white rounded border" style="border-color: var(--sand-border) !important;">
+            <table class="table table-sm table-bordered mb-0" id="modalEquiposTable" style="font-size: 0.8rem;">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Equipo</th>
+                  <th>Marca &bull; Modelo</th>
+                  <th>Estado Físico</th>
+                  <th>Estatus</th>
+                  <th>Notas / Serie</th>
+                </tr>
+              </thead>
+              <tbody id="modalEquiposBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="modalEntregasSection" class="mb-2 d-none">
+          <label class="label-eyebrow d-block mb-1">Actas de Devolución Asociadas:</label>
+          <div id="modalEntregasList" class="d-flex flex-column gap-2"></div>
         </div>
       </div>
 
@@ -237,10 +274,6 @@
         <a id="modalDownloadBtn" href="#" class="btn btn-secondary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank" title="Abrir e Imprimir Política de Asignación">
           <i class="bi bi-file-earmark-text"></i>
           <span>PDF Asignación</span>
-        </a>
-        <a id="modalDevDownloadBtn" href="#" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1" target="_blank" style="display: none;" title="Abrir e Imprimir Carta de No Adeudo">
-          <i class="bi bi-shield-check"></i>
-          <span>PDF No Adeudo</span>
         </a>
       </div>
     </div>
@@ -278,28 +311,68 @@
     btn.addEventListener('click', () => {
       const folio = btn.getAttribute('data-folio');
       document.getElementById('modalFolio').textContent = folio;
-      document.getElementById('modalEmpleado').textContent = btn.getAttribute('data-empleado');
-      document.getElementById('modalEquipo').textContent = btn.getAttribute('data-equipo');
-      document.getElementById('modalMarcaModelo').textContent = btn.getAttribute('data-marca') + ' • ' + btn.getAttribute('data-modelo');
-      document.getElementById('modalFecha').textContent = btn.getAttribute('data-fecha');
-      document.getElementById('modalEstado').textContent = btn.getAttribute('data-estado');
-      document.getElementById('modalFirma').textContent = btn.getAttribute('data-firma');
-      document.getElementById('modalCreacion').textContent = btn.getAttribute('data-creacion');
-      document.getElementById('modalNotas').textContent = btn.getAttribute('data-notas') || 'Sin observaciones adicionales.';
-      
-      const downloadBtn = document.getElementById('modalDownloadBtn');
-      downloadBtn.href = '/descargar/' + folio;
+      document.getElementById('modalDownloadBtn').href = '/descargar/' + folio;
 
-      const devFolio = btn.getAttribute('data-dev');
-      const devBtn = document.getElementById('modalDevDownloadBtn');
-      if (devFolio) {
-        devBtn.href = '/descargar-devolucion/' + devFolio;
-        devBtn.style.display = 'inline-flex';
-      } else {
-        devBtn.style.display = 'none';
-      }
+      // Fetch full details via API
+      fetch('/api/politica/' + folio)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('modalEmpleado').textContent = data.nombre_empleado || '';
+          document.getElementById('modalFecha').textContent = data.fecha_entrega || '';
+          document.getElementById('modalFirma').textContent = data.estado_firma || '';
+          document.getElementById('modalCreacion').textContent = data.fecha_creacion || '';
 
-      detailsModal.show();
+          const tbody = document.getElementById('modalEquiposBody');
+          tbody.innerHTML = '';
+          if (data.equipos && data.equipos.length > 0) {
+            data.equipos.forEach((eq, idx) => {
+              const isDevuelto = eq.estado_devolucion === 'Devuelto';
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><strong>${idx + 1}</strong></td>
+                <td><strong>${eq.equipo_asignado}</strong></td>
+                <td>${eq.marca} ${eq.modelo}</td>
+                <td>${eq.estado_fisico}</td>
+                <td>
+                  ${isDevuelto 
+                    ? `<span class="badge bg-success"><i class="bi bi-check2 me-1"></i>Devuelto (${eq.folio_entrega || ''})</span>`
+                    : `<span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>En Resguardo</span>`
+                  }
+                </td>
+                <td class="text-muted small">${eq.notas || 'Sin notas'}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+
+          // Entregas associated
+          const entregasSec = document.getElementById('modalEntregasSection');
+          const entregasList = document.getElementById('modalEntregasList');
+          entregasList.innerHTML = '';
+          if (data.entregas && data.entregas.length > 0) {
+            entregasSec.classList.remove('d-none');
+            data.entregas.forEach(ent => {
+              const div = document.createElement('div');
+              div.className = 'p-2 bg-white rounded border d-flex justify-content-between align-items-center small';
+              div.innerHTML = `
+                <div>
+                  <strong class="text-primary">${ent.folio_entrega}</strong> &bull; Fecha: ${ent.fecha_devolucion} &bull; Dictamen: <b>${ent.dictamen_no_adeudo}</b>
+                </div>
+                <a href="/descargar-devolucion/${ent.folio_entrega}" target="_blank" class="btn btn-sm btn-outline-sand py-0 px-2" style="font-size: 0.75rem;">
+                  <i class="bi bi-file-earmark-pdf text-danger me-1"></i> Ver PDF
+                </a>
+              `;
+              entregasList.appendChild(div);
+            });
+          } else {
+            entregasSec.classList.add('d-none');
+          }
+
+          detailsModal.show();
+        })
+        .catch(err => {
+          console.error('Error fetching modal details:', err);
+        });
     });
   });
 </script>

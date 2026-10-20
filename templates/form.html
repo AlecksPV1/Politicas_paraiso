@@ -13,7 +13,7 @@
             Nueva Política de Consignación de Equipo
           </h3>
           <span class="label-eyebrow" style="color: var(--gold-light); font-size: 11px;">
-            Paraíso Country Club &bull; Resguardo Oficial de Cómputo
+            Paraíso Country Club &bull; Resguardo Oficial de Cómputo y Dispositivos
           </span>
         </div>
         <div>
@@ -49,61 +49,86 @@
             </div>
           </div>
 
-          <!-- Section 2 -->
-          <div class="section-step-title mt-4">
-            <span class="step-num-badge">02</span>
-            <span>Especificaciones del Equipo Consignado</span>
+          <!-- Section 2: Multi-Equipment Specification -->
+          <div class="section-step-title mt-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <span class="step-num-badge">02</span>
+              <span>Especificaciones de los Equipos Consignados</span>
+            </div>
+            <button type="button" class="btn btn-outline-sand btn-sm d-inline-flex align-items-center gap-1.5" id="addEquipoBtn" style="font-size: 0.84rem;">
+              <i class="bi bi-plus-circle-fill text-success"></i>
+              <span>+ Agregar otro equipo</span>
+            </button>
           </div>
 
-          <div class="row g-3 mb-4">
-            <div class="col-md-4">
-              <label for="equipo_asignado" class="form-label-club">
-                Equipo Asignado <span class="text-danger">*</span>
-              </label>
-              <select class="form-select" id="equipo_asignado" name="equipo_asignado" required>
-                <option value="" selected disabled>Seleccione un tipo...</option>
-                <option value="Laptop / Portátil">Laptop / Portátil</option>
-                <option value="Computadora de Escritorio / PC">Computadora de Escritorio / PC</option>
-                <option value="Smartphone / Teléfono Celular">Smartphone / Teléfono Celular</option>
-                <option value="Tablet / Dispositivo Móvil">Tablet / Dispositivo Móvil</option>
-                <option value="Radio Comunicador">Radio Comunicador</option>
-                <option value="Impresora / Periférico">Impresora / Periférico</option>
-                <option value="Otro Dispositivo Electrónico">Otro Dispositivo Electrónico</option>
-              </select>
-            </div>
+          <p class="text-muted small mb-3">
+            Puede asignar uno o múltiples equipos en esta misma política (por ejemplo: una laptop y un radio comunicador). Todos quedarán amparados bajo el mismo folio responsivo.
+          </p>
 
-            <div class="col-md-4">
-              <label for="marca" class="form-label-club">
-                Marca <span class="text-danger">*</span>
-              </label>
-              <input type="text" class="form-control" id="marca" name="marca" required placeholder="Ej. Lenovo, Dell, Apple, Hytera">
-            </div>
+          <div id="equiposContainer" class="d-flex flex-column gap-3 mb-4">
+            <!-- Equipo Item 1 (Base template) -->
+            <div class="equipo-item card border p-3 p-md-4" style="background-color: var(--surface-container); border-color: var(--sand-border) !important; border-radius: var(--radius-md);">
+              <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: rgba(216, 205, 189, 0.4) !important;">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge" style="background-color: var(--primary); color: #fff; font-size: 11px; font-weight: 600;">ACTIVO <span class="equipo-idx">1</span></span>
+                  <strong class="text-dark small equipo-title">Primer Equipo a Consignar</strong>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-equipo-btn d-none" style="font-size: 0.75rem; padding: 2px 8px;">
+                  <i class="bi bi-trash me-1"></i> Quitar equipo
+                </button>
+              </div>
 
-            <div class="col-md-4">
-              <label for="modelo" class="form-label-club">
-                Modelo <span class="text-danger">*</span>
-              </label>
-              <input type="text" class="form-control" id="modelo" name="modelo" required placeholder="Ej. ThinkPad T14 / BD506">
-            </div>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label-club">
+                    Tipo de Equipo <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" name="equipo_asignado" required>
+                    <option value="" selected disabled>Seleccione un tipo...</option>
+                    <option value="Laptop / Portátil">Laptop / Portátil</option>
+                    <option value="Computadora de Escritorio / PC">Computadora de Escritorio / PC</option>
+                    <option value="Smartphone / Teléfono Celular">Smartphone / Teléfono Celular</option>
+                    <option value="Tablet / Dispositivo Móvil">Tablet / Dispositivo Móvil</option>
+                    <option value="Radio Comunicador">Radio Comunicador</option>
+                    <option value="Impresora / Periférico">Impresora / Periférico</option>
+                    <option value="Otro Dispositivo Electrónico">Otro Dispositivo Electrónico</option>
+                  </select>
+                </div>
 
-            <div class="col-md-6">
-              <label for="estado_fisico" class="form-label-club">
-                Estado Físico del Equipo <span class="text-danger">*</span>
-              </label>
-              <select class="form-select" id="estado_fisico" name="estado_fisico" required>
-                <option value="" selected disabled>Seleccione el estado...</option>
-                <option value="Nuevo (En caja con accesorios originales)">Nuevo (En caja con accesorios originales)</option>
-                <option value="Excelente (Sin rayaduras ni detalles estéticos)">Excelente (Sin rayaduras ni detalles estéticos)</option>
-                <option value="Bueno (Detalles menores de uso operativo)">Bueno (Detalles menores de uso operativo)</option>
-                <option value="Regular (Desgaste visible, 100% funcional)">Regular (Desgaste visible, 100% funcional)</option>
-              </select>
-            </div>
+                <div class="col-md-4">
+                  <label class="form-label-club">
+                    Marca <span class="text-danger">*</span>
+                  </label>
+                  <input type="text" class="form-control" name="marca" required placeholder="Ej. Lenovo, Dell, Apple, Hytera">
+                </div>
 
-            <div class="col-md-6">
-              <label for="notas" class="form-label-club">
-                Notas y Accesorios Extra <span class="text-danger">*</span>
-              </label>
-              <textarea class="form-control" id="notas" name="notas" rows="2" required placeholder="Números de serie, cargador original, cables, mouse, funda o especificaciones adicionales..."></textarea>
+                <div class="col-md-4">
+                  <label class="form-label-club">
+                    Modelo <span class="text-danger">*</span>
+                  </label>
+                  <input type="text" class="form-control" name="modelo" required placeholder="Ej. ThinkPad T14 / BD506">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label-club">
+                    Estado Físico del Equipo <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" name="estado_fisico" required>
+                    <option value="" selected disabled>Seleccione el estado...</option>
+                    <option value="Nuevo (En caja con accesorios originales)">Nuevo (En caja con accesorios originales)</option>
+                    <option value="Excelente (Sin rayaduras ni detalles estéticos)">Excelente (Sin rayaduras ni detalles estéticos)</option>
+                    <option value="Bueno (Detalles menores de uso operativo)">Bueno (Detalles menores de uso operativo)</option>
+                    <option value="Regular (Desgaste visible, 100% funcional)">Regular (Desgaste visible, 100% funcional)</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label-club">
+                    Notas y Accesorios Extra <span class="text-danger">*</span>
+                  </label>
+                  <textarea class="form-control" name="notas" rows="2" required placeholder="Números de serie, cargador original, cables, mouse, funda o especificaciones adicionales..."></textarea>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -167,4 +192,72 @@
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/signature.js') }}"></script>
+<script>
+  // Dynamic Equipment Addition / Removal
+  const container = document.getElementById('equiposContainer');
+  const addBtn = document.getElementById('addEquipoBtn');
+
+  function updateEquipmentIndices() {
+    const items = container.querySelectorAll('.equipo-item');
+    items.forEach((item, index) => {
+      const idxSpan = item.querySelector('.equipo-idx');
+      const titleSpan = item.querySelector('.equipo-title');
+      const removeBtn = item.querySelector('.remove-equipo-btn');
+      
+      if (idxSpan) idxSpan.textContent = (index + 1);
+      if (titleSpan) {
+        titleSpan.textContent = index === 0 ? 'Primer Equipo a Consignar' : `Equipo Adicional #${index + 1}`;
+      }
+      
+      if (removeBtn) {
+        if (items.length > 1) {
+          removeBtn.classList.remove('d-none');
+        } else {
+          removeBtn.classList.add('d-none');
+        }
+      }
+    });
+  }
+
+  if (addBtn && container) {
+    addBtn.addEventListener('click', () => {
+      const currentItems = container.querySelectorAll('.equipo-item');
+      const firstItem = currentItems[0];
+      const clone = firstItem.cloneNode(true);
+
+      // Clear values in clone
+      clone.querySelectorAll('input').forEach(input => input.value = '');
+      clone.querySelectorAll('textarea').forEach(textarea => textarea.value = '');
+      clone.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+      // Add remove listener
+      const removeBtn = clone.querySelector('.remove-equipo-btn');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+          clone.remove();
+          updateEquipmentIndices();
+        });
+      }
+
+      container.appendChild(clone);
+      updateEquipmentIndices();
+
+      // Focus first field of new item
+      const firstSelect = clone.querySelector('select');
+      if (firstSelect) firstSelect.focus();
+    });
+
+    // Delegate remove for existing items
+    container.addEventListener('click', (e) => {
+      const btn = e.target.closest('.remove-equipo-btn');
+      if (btn) {
+        const item = btn.closest('.equipo-item');
+        if (item && container.querySelectorAll('.equipo-item').length > 1) {
+          item.remove();
+          updateEquipmentIndices();
+        }
+      }
+    });
+  }
+</script>
 {% endblock %}

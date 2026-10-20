@@ -77,7 +77,7 @@
             <th>Folio Devolución</th>
             <th>Folio Origen</th>
             <th>Colaborador</th>
-            <th>Equipo Devuelto</th>
+            <th>Equipo(s) Devuelto(s)</th>
             <th>Fecha Devolución</th>
             <th>Motivo</th>
             <th>Dictamen No Adeudo</th>
@@ -101,9 +101,20 @@
                 <strong style="color: var(--ink-primary);">{{ item['nombre_empleado'] }}</strong>
               </td>
               <td>
-                <span style="color: var(--ink-secondary);">
-                  <i class="bi bi-laptop me-1 text-muted"></i>{{ item['equipo_asignado'] }}
-                </span>
+                <div class="d-flex flex-column gap-1">
+                  {% if item['equipos'] and item['equipos']|length > 1 %}
+                    <span class="badge text-dark border align-self-start" style="background-color: var(--surface-container); font-size: 11px;">
+                      <i class="bi bi-boxes me-1 text-primary"></i>{{ item['equipos']|length }} Equipos Recibidos
+                    </span>
+                    <span class="small text-muted text-truncate" style="max-width: 200px;" title="{{ item['equipo_asignado'] }}">
+                      {{ item['equipo_asignado'] }}
+                    </span>
+                  {% else %}
+                    <span style="color: var(--ink-secondary);">
+                      <i class="bi bi-laptop me-1 text-muted"></i>{{ item['equipo_asignado'] }}
+                    </span>
+                  {% endif %}
+                </div>
               </td>
               <td>
                 <span class="small text-muted">{{ item['fecha_devolucion'] }}</span>
@@ -213,7 +224,7 @@
             <div class="col-4 label-eyebrow">Folio Asignación Origen:</div>
             <div class="col-8 fw-bold" id="mDevOrigen" style="color: var(--primary);"></div>
 
-            <div class="col-4 label-eyebrow">Equipo Devuelto:</div>
+            <div class="col-4 label-eyebrow">Equipos Devueltos:</div>
             <div class="col-8" id="mDevEquipo"></div>
 
             <div class="col-4 label-eyebrow">Marca / Modelo:</div>

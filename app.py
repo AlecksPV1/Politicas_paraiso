@@ -22,11 +22,15 @@ from database import (
     save_politica,
     get_all_politicas,
     get_politica_by_folio,
+    get_equipos_by_folio_politica,
+    get_equipos_pendientes_by_folio_politica,
     get_next_folio_entrega,
     save_entrega,
     get_all_entregas,
     get_entrega_by_folio,
     get_entrega_by_folio_politica,
+    get_entregas_by_folio_politica,
+    get_equipos_by_folio_entrega,
     get_politicas_with_dev_status,
     get_politicas_disponibles_para_devolucion
 )
@@ -113,20 +117,44 @@ def dashboard():
 @login_required
 def nueva_politica():
     if request.method == 'POST':
-        # Mandatory fields
         nombre_empleado = request.form.get('nombre_empleado', '').strip()
-        equipo_asignado = request.form.get('equipo_asignado', '').strip()
-        marca = request.form.get('marca', '').strip()
-        modelo = request.form.get('modelo', '').strip()
         fecha_entrega = request.form.get('fecha_entrega', '').strip()
-        estado_fisico = request.form.get('estado_fisico', '').strip()
-        notas = request.form.get('notas', '').strip()
         signature_data = request.form.get('signature_data', '').strip()
 
-        # Validation
-        if not all([nombre_empleado, equipo_asignado, marca, modelo, fecha_entrega, estado_fisico, notas]):
-            flash('Todos los campos marcados con asterisco (*) son obligatorios.', 'error')
+        # Multi-equipment support
+        equipos_asignados = request.form.getlist('equipo_asignado') or request.form.getlist('equipo_asignado[]')
+        marcas = request.form.getlist('marca') or request.form.getlist('marca[]')
+        modelos = request.form.getlist('modelo') or request.form.getlist('modelo[]')
+        estados_fisicos = request.form.getlist('estado_fisico') or request.form.getlist('estado_fisico[]')
+        notas_list = request.form.getlist('notas') or request.form.getlist('notas[]')
+
+        if not nombre_empleado or not fecha_entrega:
+            flash('El nombre del colaborador y la fecha de entrega son obligatorios.', 'error')
             return redirect(url_for('nueva_politica'))
+
+        if not equipos_asignados or len(equipos_asignados) == 0:
+            flash('Debe asignar al menos un equipo de cómputo o dispositivo.', 'error')
+            return redirect(url_for('nueva_politica'))
+
+        equipos = []
+        for i in range(len(equipos_asignados)):
+            eq = equipos_asignados[i].strip()
+            ma = marcas[i].strip() if i < len(marcas) else ''
+            mo = modelos[i].strip() if i < len(modelos) else ''
+            ef = estados_fisicos[i].strip() if i < len(estados_fisicos) else ''
+            nt = notas_list[i].strip() if i < len(notas_list) else ''
+
+            if not all([eq, ma, mo, ef]):
+                flash(f'Por favor completa todos los campos del equipo #{i+1} (*).', 'error')
+                return redirect(url_for('nueva_politica'))
+
+            equipos.append({
+                'equipo_asignado': eq,
+                'marca': ma,
+                'modelo': mo,
+                'estado_fisico': ef,
+                'notas': nt
+            })
 
         # Generate folio
         folio = get_next_folio()
@@ -136,7 +164,6 @@ def nueva_politica():
         signature_filename = None
         if signature_data and signature_data.startswith('data:image'):
             try:
-                # Remove header like data:image/png;base64,
                 img_data_str = re.sub('^data:image/.+;base64,', '', signature_data)
                 img_bytes = base64.b64decode(img_data_str)
                 signature_filename = f"{folio}_signature.png"
@@ -148,15 +175,23 @@ def nueva_politica():
                 signature_path = None
                 signature_filename = None
 
+        # Summary strings for legacy/list views
+        equipo_summary = " + ".join([eq['equipo_asignado'] for eq in equipos]) if len(equipos) > 1 else equipos[0]['equipo_asignado']
+        marca_summary = ", ".join([eq['marca'] for eq in equipos]) if len(equipos) > 1 else equipos[0]['marca']
+        modelo_summary = ", ".join([eq['modelo'] for eq in equipos]) if len(equipos) > 1 else equipos[0]['modelo']
+        estado_summary = ", ".join(list(dict.fromkeys([eq['estado_fisico'] for eq in equipos])))
+        notas_summary = " | ".join([f"[{eq['equipo_asignado']}]: {eq['notas']}" for eq in equipos if eq['notas']]) or (equipos[0]['notas'] if equipos else '')
+
         data = {
             'folio': folio,
             'nombre_empleado': nombre_empleado,
-            'equipo_asignado': equipo_asignado,
-            'marca': marca,
-            'modelo': modelo,
+            'equipo_asignado': equipo_summary,
+            'marca': marca_summary,
+            'modelo': modelo_summary,
             'fecha_entrega': fecha_entrega,
-            'estado_fisico': estado_fisico,
-            'notas': notas
+            'estado_fisico': estado_summary,
+            'notas': notas_summary,
+            'equipos': equipos
         }
 
         # Generate PDF
@@ -167,9 +202,9 @@ def nueva_politica():
             return redirect(url_for('nueva_politica'))
 
         # Save to SQLite
-        save_politica(data, pdf_filename, signature_filename)
+        save_politica(data, pdf_filename, signature_filename, equipos=equipos)
 
-        flash(f'¡Política creada con éxito bajo el folio {folio}! Documento PDF generado y listo para su descarga.', 'success')
+        flash(f'¡Política creada con éxito bajo el folio {folio}! Documento PDF generado con {len(equipos)} equipo(s) consignado(s).', 'success')
         return redirect(url_for('dashboard'))
 
     # GET Request
@@ -181,7 +216,12 @@ def nueva_politica():
 @app.route('/devoluciones')
 @login_required
 def devoluciones():
-    entregas = get_all_entregas()
+    entregas_raw = get_all_entregas()
+    entregas = [dict(e) for e in entregas_raw]
+    for e in entregas:
+        e['equipos'] = get_equipos_by_folio_entrega(e['folio_entrega'])
+        e['total_devueltos'] = len(e['equipos'])
+
     total_entregas = len(entregas)
     liberados_count = sum(1 for e in entregas if 'LIBERADO' in e['dictamen_no_adeudo'].upper())
     retenciones_count = total_entregas - liberados_count
@@ -205,30 +245,78 @@ def nueva_devolucion(folio_politica=None):
         folio_politica = request.form.get('folio_politica', '').strip()
         nombre_empleado = request.form.get('nombre_empleado', '').strip()
         puesto_departamento = request.form.get('puesto_departamento', '').strip()
-        equipo_asignado = request.form.get('equipo_asignado', '').strip()
-        marca = request.form.get('marca', '').strip()
-        modelo = request.form.get('modelo', '').strip()
         motivo_entrega = request.form.get('motivo_entrega', '').strip()
         fecha_devolucion = request.form.get('fecha_devolucion', '').strip()
-        estado_fisico_entrega = request.form.get('estado_fisico_entrega', '').strip()
-        operatividad = request.form.get('operatividad', '').strip()
         dictamen_no_adeudo = request.form.get('dictamen_no_adeudo', '').strip()
         monto_retencion = request.form.get('monto_retencion', '$0.00').strip()
-        accesorios_devueltos = request.form.get('accesorios_devueltos', '').strip()
-        accesorios_faltantes = request.form.get('accesorios_faltantes', 'Ninguno').strip()
         observaciones = request.form.get('observaciones', '').strip()
         responsable_sistemas = request.form.get('responsable_sistemas', '').strip()
         signature_data = request.form.get('signature_data', '').strip()
 
-        if not all([folio_politica, nombre_empleado, equipo_asignado, marca, modelo, motivo_entrega, fecha_devolucion, estado_fisico_entrega, dictamen_no_adeudo, responsable_sistemas]):
+        # Selected equipment IDs from checkboxes
+        selected_ids = request.form.getlist('selected_equipos') or request.form.getlist('selected_equipos[]')
+
+        if not all([folio_politica, nombre_empleado, motivo_entrega, fecha_devolucion, dictamen_no_adeudo, responsable_sistemas]):
             flash('Por favor completa todos los campos requeridos (*).', 'error')
             return redirect(url_for('nueva_devolucion', folio_politica=folio_politica))
 
-        # Check if this folio_politica already has an entrega
-        entrega_existente = get_entrega_by_folio_politica(folio_politica)
-        if entrega_existente:
-            flash(f'El folio de asignación {folio_politica} ya cuenta con un acta de devolución ({entrega_existente["folio_entrega"]}).', 'error')
+        # Check pending equipments for this policy
+        pendientes = get_equipos_pendientes_by_folio_politica(folio_politica)
+        if not pendientes:
+            flash(f'La política {folio_politica} ya no cuenta con equipos pendientes de devolución.', 'warning')
             return redirect(url_for('devoluciones'))
+
+        # If no specific equipment checkboxes were selected, check if there's a fallback single equipment
+        equipos_devueltos = []
+        if selected_ids:
+            # Match selected IDs with pending items
+            pendientes_map = {str(eq['id']): eq for eq in pendientes}
+            for sid in selected_ids:
+                if sid in pendientes_map:
+                    base_eq = pendientes_map[sid]
+                    ef = request.form.get(f'estado_fisico_entrega_{sid}') or request.form.get('estado_fisico_entrega', 'Excelente / Sin daños ni rayaduras')
+                    op = request.form.get(f'operatividad_{sid}') or request.form.get('operatividad', '100% Operativo y Verificado (Sin bloqueos ni contraseñas)')
+                    acc_dev = request.form.get(f'accesorios_devueltos_{sid}') or request.form.get('accesorios_devueltos', 'Completos')
+                    acc_fal = request.form.get(f'accesorios_faltantes_{sid}') or request.form.get('accesorios_faltantes', 'Ninguno')
+
+                    equipos_devueltos.append({
+                        'politica_equipo_id': base_eq['id'],
+                        'equipo_asignado': base_eq['equipo_asignado'],
+                        'marca': base_eq['marca'],
+                        'modelo': base_eq['modelo'],
+                        'estado_fisico_entrega': ef,
+                        'operatividad': op,
+                        'accesorios_devueltos': acc_dev,
+                        'accesorios_faltantes': acc_fal
+                    })
+        else:
+            # Fallback for single equipment return or direct form post
+            ef = request.form.get('estado_fisico_entrega', 'Excelente / Sin daños ni rayaduras')
+            op = request.form.get('operatividad', '100% Operativo y Verificado (Sin bloqueos ni contraseñas)')
+            acc_dev = request.form.get('accesorios_devueltos', 'Completos')
+            acc_fal = request.form.get('accesorios_faltantes', 'Ninguno')
+            eq_name = request.form.get('equipo_asignado') or (pendientes[0]['equipo_asignado'] if pendientes else 'Equipo')
+            eq_marca = request.form.get('marca') or (pendientes[0]['marca'] if pendientes else '')
+            eq_modelo = request.form.get('modelo') or (pendientes[0]['modelo'] if pendientes else '')
+            pe_id = pendientes[0]['id'] if pendientes else None
+
+            equipos_devueltos.append({
+                'politica_equipo_id': pe_id,
+                'equipo_asignado': eq_name,
+                'marca': eq_marca,
+                'modelo': eq_modelo,
+                'estado_fisico_entrega': ef,
+                'operatividad': op,
+                'accesorios_devueltos': acc_dev,
+                'accesorios_faltantes': acc_fal
+            })
+
+        if not equipos_devueltos:
+            flash('Debe seleccionar al menos un equipo para procesar la entrega.', 'error')
+            return redirect(url_for('nueva_devolucion', folio_politica=folio_politica))
+
+        # Check if partial return (some equipments will still remain pending)
+        es_parcial = len(equipos_devueltos) < len(pendientes)
 
         folio_entrega = get_next_folio_entrega()
 
@@ -247,24 +335,34 @@ def nueva_devolucion(folio_politica=None):
                 signature_path = None
                 signature_filename = None
 
+        equipo_summary = ", ".join([eq['equipo_asignado'] for eq in equipos_devueltos])
+        marca_summary = ", ".join([eq['marca'] for eq in equipos_devueltos])
+        modelo_summary = ", ".join([eq['modelo'] for eq in equipos_devueltos])
+        ef_summary = ", ".join(list(dict.fromkeys([eq['estado_fisico_entrega'] for eq in equipos_devueltos])))
+        op_summary = ", ".join(list(dict.fromkeys([eq['operatividad'] for eq in equipos_devueltos])))
+        acc_dev_summary = " | ".join([f"[{eq['equipo_asignado']}]: {eq['accesorios_devueltos']}" for eq in equipos_devueltos]) if len(equipos_devueltos) > 1 else equipos_devueltos[0]['accesorios_devueltos']
+        acc_fal_summary = " | ".join([f"[{eq['equipo_asignado']}]: {eq['accesorios_faltantes']}" for eq in equipos_devueltos if eq['accesorios_faltantes'] and eq['accesorios_faltantes'] != 'Ninguno']) or 'Ninguno'
+
         data = {
             'folio_entrega': folio_entrega,
             'folio_politica': folio_politica,
             'nombre_empleado': nombre_empleado,
             'puesto_departamento': puesto_departamento,
-            'equipo_asignado': equipo_asignado,
-            'marca': marca,
-            'modelo': modelo,
+            'equipo_asignado': equipo_summary,
+            'marca': marca_summary,
+            'modelo': modelo_summary,
             'motivo_entrega': motivo_entrega,
             'fecha_devolucion': fecha_devolucion,
-            'estado_fisico_entrega': estado_fisico_entrega,
-            'operatividad': operatividad,
+            'estado_fisico_entrega': ef_summary,
+            'operatividad': op_summary,
             'dictamen_no_adeudo': dictamen_no_adeudo,
             'monto_retencion': monto_retencion,
-            'accesorios_devueltos': accesorios_devueltos,
-            'accesorios_faltantes': accesorios_faltantes,
+            'accesorios_devueltos': acc_dev_summary,
+            'accesorios_faltantes': acc_fal_summary,
             'observaciones': observaciones,
-            'responsable_sistemas': responsable_sistemas
+            'responsable_sistemas': responsable_sistemas,
+            'es_parcial': es_parcial,
+            'equipos_devueltos': equipos_devueltos
         }
 
         try:
@@ -273,21 +371,30 @@ def nueva_devolucion(folio_politica=None):
             flash(f'Error al generar el documento PDF de devolución: {str(e)}', 'error')
             return redirect(url_for('nueva_devolucion', folio_politica=folio_politica))
 
-        save_entrega(data, pdf_filename, signature_filename)
+        save_entrega(data, pdf_filename, signature_filename, equipos_devueltos=equipos_devueltos)
 
-        flash(f'¡Acta de Entrega y Carta de No Adeudo {folio_entrega} generada con éxito para {nombre_empleado}!', 'success')
+        if es_parcial:
+            pendientes_restantes = len(pendientes) - len(equipos_devueltos)
+            flash(f'¡Acta de Entrega Parcial {folio_entrega} generada con éxito! Se devolvieron {len(equipos_devueltos)} equipo(s). Quedan {pendientes_restantes} equipo(s) en resguardo bajo la política {folio_politica}.', 'info')
+        else:
+            flash(f'¡Acta de Entrega y Carta de No Adeudo Total {folio_entrega} generada con éxito para {nombre_empleado}! Todos los equipos han sido devueltos.', 'success')
+
         return redirect(url_for('devoluciones'))
 
     # GET Request
     target_folio = folio_politica or request.args.get('folio_politica')
     politica_seleccionada = None
+    equipos_politica = []
+
     if target_folio:
-        entrega_existente = get_entrega_by_folio_politica(target_folio)
-        if entrega_existente:
-            flash(f'El folio de asignación {target_folio} ya cuenta con un acta de devolución ({entrega_existente["folio_entrega"]}).', 'warning')
-            return redirect(url_for('devoluciones'))
         politica_seleccionada = get_politica_by_folio(target_folio)
-        if not politica_seleccionada:
+        if politica_seleccionada:
+            equipos_politica = get_equipos_by_folio_politica(target_folio)
+            pendientes = [eq for eq in equipos_politica if eq['estado_devolucion'] == 'En Resguardo']
+            if not pendientes:
+                flash(f'Todos los equipos consignados bajo la política {target_folio} ya han sido devueltos formalmente.', 'warning')
+                return redirect(url_for('devoluciones'))
+        else:
             flash(f'No se encontró la política con folio {target_folio}.', 'error')
 
     next_folio_entrega = get_next_folio_entrega()
@@ -299,7 +406,8 @@ def nueva_devolucion(folio_politica=None):
         next_folio_entrega=next_folio_entrega,
         today_date=today_date,
         politicas=politicas_disponibles,
-        politica_seleccionada=politica_seleccionada
+        politica_seleccionada=politica_seleccionada,
+        equipos_politica=equipos_politica
     )
 
 
@@ -347,7 +455,11 @@ def api_politica(folio):
     record = get_politica_by_folio(folio)
     if not record:
         return jsonify({'error': 'No encontrado'}), 404
-    return jsonify(dict(record))
+    data = dict(record)
+    data['equipos'] = get_equipos_by_folio_politica(folio)
+    data['equipos_pendientes'] = get_equipos_pendientes_by_folio_politica(folio)
+    data['entregas'] = get_entregas_by_folio_politica(folio)
+    return jsonify(data)
 
 
 if __name__ == '__main__':
