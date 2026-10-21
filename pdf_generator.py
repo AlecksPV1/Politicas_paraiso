@@ -752,54 +752,46 @@ def generate_entrega_pdf(data, signature_path=None):
     story.append(dec_table)
     story.append(Spacer(1, 8))
 
-    # 5. BLOQUE DE FIRMAS TRIPARTITA (Colaborador, Sistemas, Vo.Bo. Recursos Humanos)
-    story.append(Paragraph("4. FIRMAS DE CONFORMIDAD, RECEPCIÓN Y VO.BO. FINIQUITO", section_heading))
-    story.append(Paragraph("<font size=6.5 color='#53635B'>Las partes suscriben la presente acta en señal de conformidad sobre el estado del equipo y la liberación de adeudo asentada.</font>", subtitle_style))
-    story.append(Spacer(1, 5))
+    # 5. BLOQUE DE FIRMAS (Colaborador que entrega y Sistemas que recibe)
+    story.append(Paragraph("4. CONFORMIDAD Y FIRMAS DE ENTREGA - RECEPCIÓN", section_heading))
+    story.append(Paragraph("<font size=7 color='#53635B'>Las partes suscriben la presente acta en señal de conformidad sobre el estado del equipo y la liberación de adeudo asentada.</font>", subtitle_style))
+    story.append(Spacer(1, 6))
 
     sig_img_flowable = None
     if signature_path and os.path.exists(signature_path):
-        sig_img_flowable = get_scaled_image(signature_path, max_width=160, max_height=55)
+        sig_img_flowable = get_scaled_image(signature_path, max_width=180, max_height=65)
 
     sig_box_employee = sig_img_flowable if sig_img_flowable else Paragraph("<br/><br/><br/>", body_style)
     sig_box_sistemas = Paragraph("<br/><br/><br/>", body_style)
-    sig_box_rrhh = Paragraph("<br/><br/><br/>", body_style)
 
     signatures_matrix = [
         [
             sig_box_employee,
-            sig_box_sistemas,
-            sig_box_rrhh
+            sig_box_sistemas
         ],
         [
             Paragraph(
-                f"___________________________________<br/>"
+                f"_______________________________________<br/>"
                 f"<b>{data.get('nombre_empleado', 'COLABORADOR').upper()}</b><br/>"
-                f"<font size=6.5 color='#53635B'>Entrega de Equipo (Colaborador)</font><br/>"
-                f"<font size=6.5 color='#1B4D3E'>Firma Digital Registrada</font>" if signature_path else
-                f"___________________________________<br/>"
+                f"<font size=7 color='#53635B'>Entrega de Equipo (Colaborador)</font><br/>"
+                f"<font size=7 color='#1B4D3E'>Firma Digital Registrada en Sistema</font>" if signature_path else
+                f"_______________________________________<br/>"
                 f"<b>{data.get('nombre_empleado', 'COLABORADOR').upper()}</b><br/>"
-                f"<font size=6.5 color='#53635B'>Firma Autógrafa de Conformidad</font>",
+                f"<font size=7 color='#53635B'>Nombre y Firma Autógrafa de Conformidad</font>",
                 subtitle_style
             ),
             Paragraph(
-                f"___________________________________<br/>"
+                f"_______________________________________<br/>"
                 f"<b>{data.get('responsable_sistemas', 'ÁREA DE SISTEMAS').upper()}</b><br/>"
-                f"<font size=6.5 color='#53635B'>Recepción e Inspección Técnica</font><br/>"
-                f"<font size=6.5 color='#1B4D3E'>Sistemas e Infraestructura</font>",
-                subtitle_style
-            ),
-            Paragraph(
-                "___________________________________<br/>"
-                "<b>RECURSOS HUMANOS</b><br/>"
-                "<font size=6.5 color='#53635B'>Validación de Finiquito / Expediente</font><br/>"
-                f"<font size=6.5 color='#53635B'>Fecha: {data.get('fecha_devolucion')}</font>",
+                f"<font size=7 color='#53635B'>Recepción e Inspección Técnica</font><br/>"
+                f"<font size=7 color='#1B4D3E'>Sistemas e Infraestructura</font><br/>"
+                f"<font size=6.5 color='#6c757d'>Fecha: {data.get('fecha_devolucion')}</font>",
                 subtitle_style
             )
         ]
     ]
 
-    sig_table = Table(signatures_matrix, colWidths=[180, 180, 180])
+    sig_table = Table(signatures_matrix, colWidths=[270, 270])
     sig_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
