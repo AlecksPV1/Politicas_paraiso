@@ -189,6 +189,14 @@
                           style="font-size: 0.8rem;">
                     <i class="bi bi-eye"></i>
                   </button>
+
+                  <button type="button" class="btn btn-outline-sand py-1 px-2 edit-name-btn"
+                          data-folio="{{ item['folio'] }}"
+                          data-nombre="{{ item['nombre_empleado'] }}"
+                          title="Corregir nombre del colaborador"
+                          style="font-size: 0.8rem;">
+                    <i class="bi bi-pencil"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -279,6 +287,39 @@
     </div>
   </div>
 </div>
+
+<!-- Modal: Edit Collaborator Name -->
+<div class="modal fade" id="editNameModal" tabindex="-1" aria-labelledby="editNameModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content modal-content-club" id="editNameForm" method="POST" action="#">
+      <div class="modal-header modal-header-club">
+        <div>
+          <h5 class="modal-title display-font mb-0 text-white" id="editNameModalLabel" style="font-size: 1.25rem;">
+            Corregir Nombre del Colaborador
+          </h5>
+          <span class="chip-pill chip-folio mt-1" id="editNameFolio" style="background-color: rgba(255, 255, 255, 0.15); color: #ffffff; border-color: rgba(255, 255, 255, 0.3);"></span>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-4" style="background-color: var(--surface-cream);">
+        <label for="editNameInput" class="label-eyebrow d-block mb-1">Nombre completo *</label>
+        <input type="text" class="form-control" id="editNameInput" name="nombre_empleado" required maxlength="150">
+        <p class="text-muted small mt-2 mb-0">
+          El folio se conserva. Los PDF de la política y de sus actas de No Adeudo se regenerarán con el nombre corregido.
+        </p>
+      </div>
+
+      <div class="modal-footer" style="background-color: #ffffff; border-top: 1px solid var(--sand-light);">
+        <button type="button" class="btn btn-outline-sand btn-sm" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary-club btn-sm d-inline-flex align-items-center gap-1">
+          <i class="bi bi-check2"></i>
+          <span>Guardar Cambios</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -302,6 +343,25 @@
       }
     });
   }
+
+  // Edit name modal handler
+  const editNameModal = new bootstrap.Modal(document.getElementById('editNameModal'));
+  const editNameInput = document.getElementById('editNameInput');
+
+  document.querySelectorAll('.edit-name-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const folio = btn.getAttribute('data-folio');
+      document.getElementById('editNameFolio').textContent = folio;
+      document.getElementById('editNameForm').action = '/editar-nombre/' + encodeURIComponent(folio);
+      editNameInput.value = btn.getAttribute('data-nombre');
+      editNameModal.show();
+    });
+  });
+
+  document.getElementById('editNameModal').addEventListener('shown.bs.modal', () => {
+    editNameInput.focus();
+    editNameInput.select();
+  });
 
   // Modal handler
   const modalEl = document.getElementById('detailsModal');

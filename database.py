@@ -449,3 +449,11 @@ def get_politicas_disponibles_para_devolucion():
         pol['equipos_pendientes'] = [dict(eq) for eq in cursor.fetchall()]
     conn.close()
     return rows
+
+def update_nombre_empleado(folio, nuevo_nombre):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE politicas SET nombre_empleado = ? WHERE folio = ?', (nuevo_nombre, folio))
+    cursor.execute('UPDATE entregas SET nombre_empleado = ? WHERE folio_politica = ?', (nuevo_nombre, folio))
+    conn.commit()
+    conn.close()

@@ -32,7 +32,8 @@ from database import (
     get_entregas_by_folio_politica,
     get_equipos_by_folio_entrega,
     get_politicas_with_dev_status,
-    get_politicas_disponibles_para_devolucion
+    get_politicas_disponibles_para_devolucion,
+    update_nombre_empleado
 )
 from pdf_generator import generate_policy_pdf, generate_entrega_pdf
 
@@ -211,6 +212,53 @@ def nueva_politica():
     next_folio = get_next_folio()
     today_date = datetime.date.today().strftime('%Y-%m-%d')
     return render_template('form.html', next_folio=next_folio, today_date=today_date)
+
+
+@app.route('/editar-nombre/<folio>', methods=['POST'])
+@login_required
+def editar_nombre(folio):
+    record = get_politica_by_folio(folio)
+    if not record:
+        abort(404, description="Política no encontrada")
+
+    nuevo_nombre = request.form.get('nombre_empleado', '').strip()
+    if not nuevo_nombre:
+        flash('El nombre del colaborador no puede quedar vacío.', 'error')
+        return redirect(url_for('dashboard'))
+
+    if nuevo_nombre == record['nombre_empleado']:
+        flash(f'El nombre de la política {folio} no tuvo cambios.', 'info')
+        return redirect(url_for('dashboard'))
+
+    nombre_anterior = record['nombre_empleado']
+    update_nombre_empleado(folio, nuevo_nombre)
+
+    # Regenerate PDFs so the printed name matches; folio and file names stay the same
+    try:
+        equipos = get_equipos_by_folio_politica(folio)
+        data = dict(get_politica_by_folio(folio))
+        data['equipos'] = equipos
+        sig_path = os.path.join(config.SIGNATURE_STORAGE_DIR, data['signature_path']) if data['signature_path'] else None
+        generate_policy_pdf(data, signature_path=sig_path)
+
+        entregas = sorted(get_entregas_by_folio_politica(folio), key=lambda e: e['id'])
+        entrega_ids = {e['folio_entrega']: e['id'] for e in entregas}
+        for ent in entregas:
+            # Partial if some equipment was still pending after this acta was issued
+            restantes = [
+                eq for eq in equipos
+                if not eq['folio_entrega'] or entrega_ids.get(eq['folio_entrega'], 0) > ent['id']
+            ]
+            ent['es_parcial'] = len(restantes) > 0
+            ent['equipos_devueltos'] = get_equipos_by_folio_entrega(ent['folio_entrega'])
+            ent_sig_path = os.path.join(config.SIGNATURE_STORAGE_DIR, ent['signature_path']) if ent['signature_path'] else None
+            generate_entrega_pdf(ent, signature_path=ent_sig_path)
+    except Exception as e:
+        flash(f'El nombre se actualizó, pero hubo un error al regenerar los documentos PDF: {str(e)}', 'warning')
+        return redirect(url_for('dashboard'))
+
+    flash(f'Nombre de la política {folio} corregido: "{nombre_anterior}" → "{nuevo_nombre}". Documentos PDF actualizados con el mismo folio.', 'success')
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/devoluciones')
